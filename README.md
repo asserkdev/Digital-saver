@@ -1,38 +1,38 @@
 # Digital Saver - Smartwatch Health Monitoring System
 
-A comprehensive smartwatch health monitoring system designed for detecting emergencies including irregular heartbeats, high blood pressure, and loss of consciousness. Built with both hardware and software components.
-
----
-
 ## Table of Contents
 
-1. [Features](#features)
-2. [Project Structure](#project-structure)
-3. [Quick Start](#quick-start)
-4. [Hardware Components](#hardware-components)
-5. [Mobile App](#mobile-app)
-6. [Firmware](#firmware)
-7. [Documentation](#documentation)
-8. [Budget](#budget)
-9. [Medical Disclaimer](#medical-disclaimer)
-10. [License](#license)
-11. [Contributing](#contributing)
+| # | Section | Description |
+|---|---------|-------------|
+| 1 | [Features](#1-features) | Core capabilities of the system |
+| 2 | [Project Structure](#2-project-structure) | File organization |
+| 3 | [Quick Start](#3-quick-start) | Get started quickly |
+| 4 | [Hardware Components](#4-hardware-components) | Parts needed for DIY watch |
+| 5 | [Mobile App](#5-mobile-app) | Flutter application features |
+| 6 | [Firmware](#6-firmware-esp32) | ESP32 watch code |
+| 7 | [Documentation](#7-documentation) | Assembly and user guides |
+| 8 | [Budget](#8-budget) | Cost breakdown (~3,810 EGP) |
+| 9 | [Disclaimer](#9-medical-disclaimer) | Important medical notice |
 
 ---
 
-## Features
+## 1. Features
 
-- **Real-time Heart Rate Monitoring** - PPG-based heart rate detection
+- **Heart Rate Monitoring** - Real-time PPG-based heart rate detection
 - **Blood Pressure Estimation** - PPG waveform analysis for BP estimation
 - **Fall Detection** - Accelerometer-based loss of consciousness detection
 - **Arrhythmia Detection** - Irregular heartbeat pattern recognition
-- **Emergency Alerts** - Automatic SMS and call alerts to emergency contacts
-- **Multi-language Support** - 10 languages including Arabic RTL support
-- **Bluetooth LE** - Low-energy communication with mobile app
+- **AFib Detection** - Atrial fibrillation screening algorithm
+- **HRV Analysis** - Heart rate variability with RMSSD, SDNN, pNN50
+- **Emergency Alerts** - Automatic SMS/call to emergency contacts with GPS
+- **Multi-language Support** - 10 languages including Arabic RTL
+- **Sleep Analysis** - Deep/Light/REM sleep stages tracking
+- **Activity Tracking** - Steps, calories, hourly activity charts
+- **Health Score** - Comprehensive 0-100 health assessment
 
 ---
 
-## Project Structure
+## 2. Project Structure
 
 ```
 Digital-saver/
@@ -43,18 +43,18 @@ Digital-saver/
 │   ├── pcb/                   # PCB design files
 │   ├── enclosure/             # 3D print files (.stl)
 │   └── firmware/
-│       └── esp32/             # Arduino/PlatformIO firmware
+│       └── esp32/            # Arduino/PlatformIO code
 ├── mobile_app/
-│   └── digital_saver/         # Flutter application
+│   └── digital_saver/        # Flutter application
 └── docs/
-    ├── assembly-guide.md
-    ├── user-manual.md
-    └── troubleshooting.md
+    ├── assembly-guide.md      # Watch assembly instructions
+    ├── user-manual.md        # User guide
+    └── troubleshooting.md    # Problem solving
 ```
 
 ---
 
-## Quick Start
+## 3. Quick Start
 
 ### Hardware Setup
 1. Order components (see Hardware Components section)
@@ -62,14 +62,15 @@ Digital-saver/
 3. Flash firmware using PlatformIO or Arduino IDE
 
 ### Mobile App Setup
-1. Install Flutter SDK
-2. Navigate to `mobile_app/digital_saver/`
-3. Run `flutter pub get`
-4. Run `flutter run`
+```bash
+cd mobile_app/digital_saver
+flutter pub get
+flutter run
+```
 
 ---
 
-## Hardware Components
+## 4. Hardware Components
 
 | Component | Model | Purpose | Price (EGP) |
 |-----------|-------|---------|-------------|
@@ -78,33 +79,42 @@ Digital-saver/
 | Accelerometer | MPU6050 | Fall detection | 45 |
 | Display | 1.3" OLED I2C | User interface | 85 |
 | Battery | 500mAh LiPo | Power supply | 75 |
+| Charger | TP4056 | LiPo charging | 25 |
 
-**Total Hardware Cost: ~3,810 EGP** (within 10,000 EGP budget)
+**Total: ~2,810 EGP** (within 10,000 EGP budget)
 
 ---
 
-## Mobile App
+## 5. Mobile App
+
+### Screens
+- **Dashboard** - Health score, metrics overview, recommendations
+- **Heart** - HRV analysis, AFib detection, HR trend chart
+- **Blood Pressure** - Vascular age, BP categories, trends
+- **Activity** - Steps, calories, hourly chart
+- **Sleep** - Sleep stages, score, insights
+- **Settings** - Profile, language, thresholds, contacts
 
 ### Supported Languages
-- English, Arabic, Spanish, French, German, Chinese, Japanese, Russian, Portuguese, Hindi
+English, Arabic, Spanish, French, German, Chinese, Japanese, Russian, Portuguese, Hindi
 
-### Features
-- Real-time health data display
-- Emergency contact management
-- Historical data tracking
-- Customizable alert thresholds
-- Dark mode support
+### Advanced Features
+- Professional Material Design 3 UI
+- Dark/Light mode support
+- Real-time BLE connection
+- Custom health score algorithm
+- Trend analysis and predictions
 
 ---
 
-## Firmware (ESP32)
+## 6. Firmware (ESP32)
 
 ### Requirements
 - Arduino IDE or PlatformIO
 - ESP32 board package
-- Required libraries (see platformio.ini)
+- Libraries: MAX30105, Adafruit GFX, MPU6050
 
-### Upload Instructions
+### Upload
 ```bash
 cd hardware/firmware/esp32
 pio run --target upload
@@ -112,43 +122,38 @@ pio run --target upload
 
 ---
 
-## Documentation
+## 7. Documentation
 
-See `SPEC.md` for detailed:
-- System architecture
-- Communication protocols
-- Detection algorithms
-- Budget breakdown
-- Implementation roadmap
+- [SPEC.md](SPEC.md) - Complete project specification
+- [Assembly Guide](docs/assembly-guide.md) - Watch assembly instructions
+- [User Manual](docs/user-manual.md) - How to use the system
+- [Troubleshooting](docs/troubleshooting.md) - Problem solving guide
 
 ---
 
-## Budget
+## 8. Budget
 
 | Category | Cost (EGP) |
-|----------|------------|
-| Electronics (MCU, Sensors, Display) | 1,000 |
+|----------|-------------|
+| Electronics | 1,000 |
 | Battery & Charger | 400 |
 | Tools & Supplies | 900 |
 | Contingency | 510 |
 | **Total** | **2,810** |
 
-✅ **Remaining from 10,000 EGP: ~7,190 EGP** for upgrades or production
+**Remaining from 10,000 EGP: ~7,190 EGP**
 
 ---
 
-## Medical Disclaimer
+## 9. Medical Disclaimer
 
-This device is a **wellness/screening tool** and is **NOT** a medical device. It should not be used for self-diagnosis or to replace professional medical care. Always consult healthcare professionals for medical advice.
+**WARNING:** This device is a **wellness/screening tool** and is **NOT** a medical device.
+
+- Do not use for self-diagnosis
+- Does not replace professional medical care
+- Always consult healthcare professionals
+- In emergencies, call local emergency services
 
 ---
 
-## License
-
-MIT License - See LICENSE file for details
-
----
-
-## Contributing
-
-Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+**Version:** 2.0.0 | **License:** MIT

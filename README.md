@@ -4,23 +4,23 @@ A comprehensive smartwatch health monitoring system designed for detecting emerg
 
 ---
 
-## 📋 Index
+## Table of Contents
 
-1. [Features](#-features)
-2. [Project Structure](#-project-structure)
-3. [Quick Start](#-quick-start)
-4. [Hardware Components](#-hardware-components)
-5. [Mobile App](#-mobile-app)
-6. [Firmware](#-firmware)
-7. [Documentation](#-documentation)
-8. [Budget](#-budget)
-9. [Medical Disclaimer](#️-medical-disclaimer)
-10. [License](#-license)
-11. [Contributing](#-contributing)
+1. [Features](#features)
+2. [Project Structure](#project-structure)
+3. [Quick Start](#quick-start)
+4. [Hardware Components](#hardware-components)
+5. [Mobile App](#mobile-app)
+6. [Firmware](#firmware)
+7. [Documentation](#documentation)
+8. [Budget](#budget)
+9. [Medical Disclaimer](#medical-disclaimer)
+10. [License](#license)
+11. [Contributing](#contributing)
 
 ---
 
-## 🎯 Features
+## Features
 
 - **Real-time Heart Rate Monitoring** - PPG-based heart rate detection
 - **Blood Pressure Estimation** - PPG waveform analysis for BP estimation
@@ -32,7 +32,7 @@ A comprehensive smartwatch health monitoring system designed for detecting emerg
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Digital-saver/
@@ -54,7 +54,7 @@ Digital-saver/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Hardware Setup
 1. Order components (see Hardware Components section)
@@ -69,7 +69,7 @@ Digital-saver/
 
 ---
 
-## 🛠️ Hardware Components
+## Hardware Components
 
 | Component | Model | Purpose | Price (EGP) |
 |-----------|-------|---------|-------------|
@@ -83,7 +83,7 @@ Digital-saver/
 
 ---
 
-## 📱 Mobile App
+## Mobile App
 
 ### Supported Languages
 - English, Arabic, Spanish, French, German, Chinese, Japanese, Russian, Portuguese, Hindi
@@ -97,7 +97,7 @@ Digital-saver/
 
 ---
 
-## 🔧 Firmware (ESP32)
+## Firmware (ESP32)
 
 ### Requirements
 - Arduino IDE or PlatformIO
@@ -112,7 +112,7 @@ pio run --target upload
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 See `SPEC.md` for detailed:
 - System architecture
@@ -123,7 +123,7 @@ See `SPEC.md` for detailed:
 
 ---
 
-## 💰 Budget
+## Budget
 
 | Category | Cost (EGP) |
 |----------|------------|
@@ -137,18 +137,18 @@ See `SPEC.md` for detailed:
 
 ---
 
-## ⚠️ Medical Disclaimer
+## Medical Disclaimer
 
 This device is a **wellness/screening tool** and is **NOT** a medical device. It should not be used for self-diagnosis or to replace professional medical care. Always consult healthcare professionals for medical advice.
 
 ---
 
-## 📄 License
+## License
 
 MIT License - See LICENSE file for details
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read our contributing guidelines before submitting pull requests.

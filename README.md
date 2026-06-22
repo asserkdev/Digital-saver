@@ -4,23 +4,64 @@
 
 | # | Section | Description |
 |---|---------|-------------|
-| 1 | [Features](#1-features) | Core capabilities of the system |
-| 2 | [Project Structure](#2-project-structure) | File organization |
-| 3 | [Quick Start](#3-quick-start) | Get started quickly |
-| 4 | [Hardware Components](#4-hardware-components) | Parts needed for DIY watch |
-| 5 | [Mobile App](#5-mobile-app) | Flutter application features |
-| 6 | [Firmware](#6-firmware-esp32) | ESP32 watch code |
-| 7 | [Documentation](#7-documentation) | Assembly and user guides |
-| 8 | [Budget](#8-budget) | Cost breakdown (~3,810 EGP) |
-| 9 | [Disclaimer](#9-medical-disclaimer) | Important medical notice |
+| 1 | [App Structure](#1-app-structure) | Flutter app code organization |
+| 2 | [Features](#2-features) | Core capabilities |
+| 3 | [Quick Start](#3-quick-start) | Run the app |
+| 4 | [Hardware](#4-hardware) | DIY watch components |
+| 5 | [Firmware](#5-firmware-esp32) | ESP32 watch code |
+| 6 | [Documentation](#6-documentation) | Guides |
+| 7 | [Budget](#7-budget) | Cost breakdown |
+| 8 | [Disclaimer](#8-disclaimer) | Important notice |
 
 ---
 
-## 1. Features
+## 1. App Structure
+
+```
+app/                    # Flutter mobile app (20 Dart files)
+├── main.dart          # App entry point
+├── screens/           # UI screens (7 screens)
+│   ├── main_screen.dart
+│   ├── dashboard_screen.dart
+│   ├── heart_screen.dart
+│   ├── blood_pressure_screen.dart
+│   ├── activity_screen.dart
+│   ├── sleep_screen.dart
+│   └── settings_screen.dart
+├── services/          # Business logic
+│   ├── ble_advanced_service.dart
+│   ├── health_analysis_service.dart
+│   ├── emergency_service.dart
+│   └── storage_service.dart
+├── models/            # Data models
+│   └── health_models.dart
+├── widgets/           # Reusable UI components
+├── theme/             # App theme
+└── i18n/             # Translations (10 languages)
+
+hardware/              # DIY smartwatch
+├── firmware/esp32/    # Arduino/ESP32 code
+└── schematic/         # Circuit diagrams
+
+docs/                  # Documentation
+```
+
+### App Files
+- `main.dart` - Entry point
+- `screens/` - 7 professional screens
+- `services/` - BLE, health analysis, emergency
+- `models/` - Comprehensive health models
+- `widgets/` - Custom UI components
+- `theme/` - Material Design 3 theme
+- `i18n/` - 10 language translations
+
+---
+
+## 2. Features
 
 - **Heart Rate Monitoring** - Real-time PPG-based heart rate detection
 - **Blood Pressure Estimation** - PPG waveform analysis for BP estimation
-- **Fall Detection** - Accelerometer-based loss of consciousness detection
+- **Fall Detection** - Accelerometer-based loss of consciousness
 - **Arrhythmia Detection** - Irregular heartbeat pattern recognition
 - **AFib Detection** - Atrial fibrillation screening algorithm
 - **HRV Analysis** - Heart rate variability with RMSSD, SDNN, pNN50
@@ -32,89 +73,18 @@
 
 ---
 
-## 2. Project Structure
-
-```
-Digital-saver/
-├── SPEC.md                    # Detailed project specification
-├── README.md                  # This file
-├── hardware/
-│   ├── schematic/             # Circuit schematics
-│   ├── pcb/                   # PCB design files
-│   ├── enclosure/             # 3D print files (.stl)
-│   └── firmware/
-│       └── esp32/            # Arduino/PlatformIO code
-├── mobile_app/
-│   └── digital_saver/        # Flutter application
-└── docs/
-    ├── assembly-guide.md      # Watch assembly instructions
-    ├── user-manual.md        # User guide
-    └── troubleshooting.md    # Problem solving
-```
-
----
-
 ## 3. Quick Start
 
-### Hardware Setup
-1. Order components (see Hardware Components section)
-2. Assemble the smartwatch (see [Assembly Guide](docs/assembly-guide.md))
-3. Flash firmware using PlatformIO or Arduino IDE
-
-### Mobile App Setup
+### Run the App
 ```bash
-cd mobile_app/digital_saver
+# Install dependencies
 flutter pub get
+
+# Run on device
 flutter run
 ```
 
----
-
-## 4. Hardware Components
-
-| Component | Model | Purpose | Price (EGP) |
-|-----------|-------|---------|-------------|
-| Main MCU | ESP32-WROOM-32 | Processing + BLE | 180 |
-| PPG Sensor | MAX30102 | Heart rate + SpO2 | 220 |
-| Accelerometer | MPU6050 | Fall detection | 45 |
-| Display | 1.3" OLED I2C | User interface | 85 |
-| Battery | 500mAh LiPo | Power supply | 75 |
-| Charger | TP4056 | LiPo charging | 25 |
-
-**Total: ~2,810 EGP** (within 10,000 EGP budget)
-
----
-
-## 5. Mobile App
-
-### Screens
-- **Dashboard** - Health score, metrics overview, recommendations
-- **Heart** - HRV analysis, AFib detection, HR trend chart
-- **Blood Pressure** - Vascular age, BP categories, trends
-- **Activity** - Steps, calories, hourly chart
-- **Sleep** - Sleep stages, score, insights
-- **Settings** - Profile, language, thresholds, contacts
-
-### Supported Languages
-English, Arabic, Spanish, French, German, Chinese, Japanese, Russian, Portuguese, Hindi
-
-### Advanced Features
-- Professional Material Design 3 UI
-- Dark/Light mode support
-- Real-time BLE connection
-- Custom health score algorithm
-- Trend analysis and predictions
-
----
-
-## 6. Firmware (ESP32)
-
-### Requirements
-- Arduino IDE or PlatformIO
-- ESP32 board package
-- Libraries: MAX30105, Adafruit GFX, MPU6050
-
-### Upload
+### Flash Firmware
 ```bash
 cd hardware/firmware/esp32
 pio run --target upload
@@ -122,16 +92,37 @@ pio run --target upload
 
 ---
 
-## 7. Documentation
+## 4. Hardware
 
-- [SPEC.md](SPEC.md) - Complete project specification
-- [Assembly Guide](docs/assembly-guide.md) - Watch assembly instructions
-- [User Manual](docs/user-manual.md) - How to use the system
-- [Troubleshooting](docs/troubleshooting.md) - Problem solving guide
+| Component | Model | Price (EGP) |
+|-----------|-------|-------------|
+| MCU | ESP32-WROOM-32 | 180 |
+| PPG Sensor | MAX30102 | 220 |
+| Accelerometer | MPU6050 | 45 |
+| Display | 1.3" OLED I2C | 85 |
+| Battery | 500mAh LiPo | 75 |
+| Charger | TP4056 | 25 |
+
+**Total: ~2,810 EGP**
 
 ---
 
-## 8. Budget
+## 5. Firmware (ESP32)
+
+See `hardware/firmware/esp32/` for Arduino/PlatformIO code.
+
+---
+
+## 6. Documentation
+
+- `SPEC.md` - Complete project specification
+- `docs/assembly-guide.md` - Watch assembly instructions
+- `docs/user-manual.md` - User guide
+- `docs/troubleshooting.md` - Problem solving
+
+---
+
+## 7. Budget
 
 | Category | Cost (EGP) |
 |----------|-------------|
@@ -145,13 +136,12 @@ pio run --target upload
 
 ---
 
-## 9. Medical Disclaimer
+## 8. Disclaimer
 
-**WARNING:** This device is a **wellness/screening tool** and is **NOT** a medical device.
+**WARNING:** This is a **wellness tool**, NOT a medical device.
 
 - Do not use for self-diagnosis
-- Does not replace professional medical care
-- Always consult healthcare professionals
+- Does not replace professional care
 - In emergencies, call local emergency services
 
 ---

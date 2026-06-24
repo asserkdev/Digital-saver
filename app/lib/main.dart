@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Digital Saver - Web App
-// Professional Health Monitoring Dashboard
-
 void main() {
   runApp(const DigitalSaverApp());
 }
@@ -22,291 +19,306 @@ class DigitalSaverApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      home: const WebDashboard(),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF2563eb),
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode: ThemeMode.light,
+      home: const WelcomeScreen(),
     );
   }
 }
 
-class WebDashboard extends StatefulWidget {
-  const WebDashboard({super.key});
-
-  @override
-  State<WebDashboard> createState() => _WebDashboardState();
-}
-
-class _WebDashboardState extends State<WebDashboard> {
-  int _currentTab = 0;
-  bool _isDarkMode = false;
-  
-  // Simulated health data
-  int _heartRate = 72;
-  int _systolic = 120;
-  int _diastolic = 80;
-  int _spO2 = 98;
-  int _steps = 8542;
-  int _calories = 420;
-  double _sleepScore = 85;
-  int _sleepHours = 7;
+// ============================================
+// WELCOME / SETUP SCREEN
+// ============================================
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Row(
-          children: [
-            Icon(Icons.favorite, color: Colors.red),
-            SizedBox(width: 12),
-            Text('Digital Saver'),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(_isDarkMode ? Icons.light_mode : Icons.dark_mode),
-            onPressed: () => setState(() => _isDarkMode = !_isDarkMode),
-          ),
-        ],
-      ),
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _currentTab,
-            onDestinationSelected: (index) => setState(() => _currentTab = index),
-            labelType: NavigationRailLabelType.all,
-            destinations: const [
-              NavigationRailDestination(icon: Icon(Icons.dashboard), label: Text('Dashboard')),
-              NavigationRailDestination(icon: Icon(Icons.favorite), label: Text('Heart')),
-              NavigationRailDestination(icon: Icon(Icons.water_drop), label: Text('BP')),
-              NavigationRailDestination(icon: Icon(Icons.directions_run), label: Text('Activity')),
-              NavigationRailDestination(icon: Icon(Icons.bedtime), label: Text('Sleep')),
-              NavigationRailDestination(icon: Icon(Icons.settings), label: Text('Settings')),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1e3a5f),
+              Color(0xFF2563eb),
+              Color(0xFF7c3aed),
             ],
           ),
-          const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: _buildContent()),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    switch (_currentTab) {
-      case 0: return _buildDashboard();
-      case 1: return _buildHeartScreen();
-      case 2: return _buildBPScreen();
-      case 3: return _buildActivityScreen();
-      case 4: return _buildSleepScreen();
-      case 5: return _buildSettingsScreen();
-      default: return _buildDashboard();
-    }
-  }
-
-  Widget _buildDashboard() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(child: _buildStatCard('Heart Rate', '$_heartRate', 'BPM', Icons.favorite, Colors.red)),
-              const SizedBox(width: 16),
-              Expanded(child: _buildStatCard('Blood Pressure', '$_systolic/$_diastolic', 'mmHg', Icons.water_drop, Colors.blue)),
-              const SizedBox(width: 16),
-              Expanded(child: _buildStatCard('Blood Oxygen', '$_spO2', '%', Icons.air, Colors.cyan)),
-              const SizedBox(width: 16),
-              Expanded(child: _buildStatCard('Steps', '$_steps', 'steps', Icons.directions_walk, Colors.orange)),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  const Icon(Icons.warning_amber, color: Colors.red, size: 40),
-                  const SizedBox(width: 16),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Emergency System', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                        Text('Fall detection & GPS alerts', style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () => _showAlert(),
-                    icon: const Icon(Icons.emergency),
-                    label: const Text('Test Alert'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, String unit, IconData icon, Color color) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                const SizedBox(width: 4),
-                Text(unit, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-              ],
-            ),
-            Text(title, style: TextStyle(color: Colors.grey.shade600)),
-          ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeartScreen() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.favorite, color: Colors.red, size: 64),
-          const SizedBox(height: 20),
-          Text('$_heartRate', style: const TextStyle(fontSize: 72, fontWeight: FontWeight.bold, color: Colors.red)),
-          const Text('BPM - Normal', style: TextStyle(fontSize: 20, color: Colors.green)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBPScreen() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.water_drop, color: Colors.blue, size: 64),
-          const SizedBox(height: 20),
-          Text('$_systolic/$_diastolic', style: const TextStyle(fontSize: 72, fontWeight: FontWeight.bold, color: Colors.blue)),
-          const Text('mmHg - Normal', style: TextStyle(fontSize: 20, color: Colors.green)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActivityScreen() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  const Icon(Icons.directions_walk, color: Colors.orange, size: 48),
-                  const SizedBox(height: 16),
-                  Text('$_steps', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
-                  const Text('Steps Today'),
-                  const SizedBox(height: 16),
-                  LinearProgressIndicator(
-                    value: _steps / 10000,
-                    backgroundColor: Colors.grey.shade200,
-                    minHeight: 10,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('${(_steps / 10000 * 100).toInt()}% of 10,000 goal'),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  const Icon(Icons.local_fire_department, color: Colors.red, size: 48),
-                  const SizedBox(height: 16),
-                  Text('$_calories', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
-                  const Text('Calories Burned'),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSleepScreen() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(colors: [Colors.purple.shade400, Colors.purple.shade700]),
-            ),
-            child: Center(
-              child: Text('${_sleepScore.toInt()}', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text('Sleep Score: ${_sleepScore.toInt()}', style: const TextStyle(fontSize: 24)),
-          Text('Duration: $_sleepHours hours', style: const TextStyle(color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSettingsScreen() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Settings', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          Card(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('Profile'),
-                  subtitle: const Text('Name, Age, Emergency Info'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                const SizedBox(height: 40),
+                // Logo
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.favorite,
+                    size: 60,
+                    color: Color(0xFF2563eb),
+                  ),
                 ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.emergency, color: Colors.red),
-                  title: const Text('Emergency Contacts'),
-                  subtitle: const Text('Add up to 3 contacts'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                const SizedBox(height: 32),
+                // Title
+                const Text(
+                  'Digital Saver',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                  ),
                 ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.bluetooth),
-                  title: const Text('Smartwatch'),
-                  subtitle: const Text('Demo Mode'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                const SizedBox(height: 8),
+                const Text(
+                  'Egyptian Government Health Project',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                // Coming Soon Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.construction, color: Colors.orange, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              'Coming Soon',
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Health Monitoring App',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Connect your Digital Saver smartwatch\nto start monitoring your health',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Features
+                      _buildFeature(Icons.favorite, 'Heart Rate', 'Real-time HRV monitoring'),
+                      _buildFeature(Icons.water_drop, 'Blood Pressure', 'Estimation & trends'),
+                      _buildFeature(Icons.air, 'Blood Oxygen', 'SpO2 tracking'),
+                      _buildFeature(Icons.directions_run, 'Activity', 'Steps & calories'),
+                      _buildFeature(Icons.bedtime, 'Sleep', 'Quality analysis'),
+                      _buildFeature(Icons.emergency, 'SOS', 'Fall detection & GPS'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Connect Watch Button
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.watch,
+                        size: 64,
+                        color: Color(0xFF2563eb),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Connect Your Watch',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Download the Digital Saver app\nand pair your smartwatch',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.bluetooth),
+                        label: const Text('Scan for Devices'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563eb),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Project Info Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: Column(
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.white70, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'About This Project',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Digital Saver is a government-funded initiative developing an affordable smartwatch health monitoring system.',
+                        style: TextStyle(color: Colors.white70, height: 1.5),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildInfoChip(Icons.attach_money, 'Budget: 3,500 EGP'),
+                          _buildInfoChip(Icons.code, 'ESP32 Firmware'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Progress Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Development Progress',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildProgressRow('Hardware Design', true),
+                      const SizedBox(height: 8),
+                      _buildProgressRow('ESP32 Firmware', true),
+                      const SizedBox(height: 8),
+                      _buildProgressRow('Mobile App', false),
+                      const SizedBox(height: 8),
+                      _buildProgressRow('Web Dashboard', true),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeature(IconData icon, String title, String subtitle) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2563eb).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFF2563eb), size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -316,23 +328,44 @@ class _WebDashboardState extends State<WebDashboard> {
     );
   }
 
-  void _showAlert() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [Icon(Icons.emergency, color: Colors.red), SizedBox(width: 8), Text('Emergency Alert')],
-        ),
-        content: const Text('This would send an emergency SMS with GPS location to all emergency contacts.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-            child: const Text('Send Alert'),
+  Widget _buildInfoChip(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: const TextStyle(color: Colors.white, fontSize: 12),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildProgressRow(String label, bool completed) {
+    return Row(
+      children: [
+        Icon(
+          completed ? Icons.check_circle : Icons.radio_button_unchecked,
+          color: completed ? Colors.green : Colors.grey,
+          size: 20,
+        ),
+        const SizedBox(width: 12),
+        Text(
+          label,
+          style: TextStyle(
+            color: completed ? Colors.black : Colors.grey,
+            fontWeight: completed ? FontWeight.w500 : FontWeight.normal,
+          ),
+        ),
+      ],
     );
   }
 }

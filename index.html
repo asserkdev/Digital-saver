@@ -3,336 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Saver - Smartwatch Health App</title>
+    <title>Digital Saver - Professional Smartwatch Health App</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            color: #fff;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%); min-height: 100vh; color: #fff; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
         
-        /* Header */
-        header {
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            border-radius: 24px;
-            margin-bottom: 40px;
-        }
-        h1 { font-size: 3rem; margin-bottom: 16px; }
-        .subtitle { font-size: 1.2rem; opacity: 0.9; }
+        /* Hero */
+        header { text-align: center; padding: 80px 20px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%); border-radius: 32px; margin-bottom: 60px; position: relative; overflow: hidden; }
+        header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%); animation: pulse 4s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.3; } }
+        h1 { font-size: 4rem; margin-bottom: 20px; position: relative; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .subtitle { font-size: 1.5rem; opacity: 0.9; position: relative; margin-bottom: 30px; }
+        .cta { display: inline-flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+        .cta a { padding: 16px 32px; background: rgba(255,255,255,0.2); border-radius: 16px; color: #fff; text-decoration: none; font-weight: 600; transition: all 0.3s; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+        .cta a:hover { background: rgba(255,255,255,0.3); transform: translateY(-4px); }
         
         /* Navigation */
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-        nav a {
-            padding: 16px 32px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            color: #fff;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        nav a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-        }
-        nav a.active {
-            background: #6366f1;
-            border-color: #6366f1;
-        }
+        nav { display: flex; justify-content: center; gap: 12px; margin-bottom: 60px; flex-wrap: wrap; }
+        nav a { padding: 12px 24px; background: rgba(255,255,255,0.05); border-radius: 12px; color: #a0a0ff; text-decoration: none; transition: all 0.3s; border: 1px solid rgba(99,102,241,0.3); }
+        nav a:hover { background: rgba(99,102,241,0.3); border-color: #6366f1; }
+        nav a.active { background: #6366f1; color: #fff; border-color: #6366f1; }
         
         /* Sections */
-        .section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 32px;
-            margin-bottom: 32px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        h2 { 
-            font-size: 1.8rem; 
-            margin-bottom: 24px;
-            color: #a855f7;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        /* File Tree */
-        .file-tree {
-            background: #0d1117;
-            border-radius: 12px;
-            padding: 24px;
-            overflow-x: auto;
-        }
-        .folder {
-            color: #58a6ff;
-            font-weight: 600;
-        }
-        .file {
-            color: #8b949e;
-        }
-        .file.dart { color: #00d4aa; }
-        .file.yaml { color: #f0883e; }
-        .file.md { color: #8b949e; }
-        
-        pre {
-            font-family: 'Fira Code', 'Monaco', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            white-space: pre;
-        }
-        
-        /* Code block */
-        code {
-            background: #161b22;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.9em;
-            color: #00d4aa;
-        }
+        .section { background: rgba(255,255,255,0.03); border-radius: 24px; padding: 48px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); }
+        h2 { font-size: 2.5rem; margin-bottom: 32px; color: #a855f7; display: flex; align-items: center; gap: 16px; }
         
         /* Features Grid */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .feature {
-            background: rgba(99, 102, 241, 0.1);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-        }
-        .feature h3 {
-            color: #6366f1;
-            margin-bottom: 8px;
-        }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .feature { background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(139,92,246,0.05) 100%); padding: 32px; border-radius: 20px; border: 1px solid rgba(99,102,241,0.2); transition: all 0.3s; }
+        .feature:hover { transform: translateY(-8px); border-color: #6366f1; box-shadow: 0 20px 60px rgba(99,102,241,0.2); }
+        .feature-icon { font-size: 3rem; margin-bottom: 16px; }
+        .feature h3 { font-size: 1.5rem; margin-bottom: 12px; color: #fff; }
+        .feature p { color: #a0a0c0; line-height: 1.6; }
         
         /* Screens */
-        .screens {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        .screen {
-            background: rgba(255,255,255,0.05);
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        .screen-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
+        .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .screen { background: rgba(255,255,255,0.05); padding: 24px; border-radius: 16px; text-align: center; transition: all 0.3s; }
+        .screen:hover { background: rgba(99,102,241,0.2); transform: scale(1.05); }
+        .screen-icon { font-size: 3rem; margin-bottom: 12px; }
+        .screen h3 { font-size: 1.2rem; margin-bottom: 8px; }
+        .screen p { font-size: 0.9rem; color: #888; }
+        
+        /* File Tree */
+        .code-block { background: #0d1117; border-radius: 16px; padding: 24px; overflow-x: auto; font-family: 'Fira Code', Monaco, monospace; font-size: 14px; line-height: 1.8; }
+        .folder { color: #58a6ff; }
+        .file { color: #7ee787; }
+        .comment { color: #8b949e; }
+        
+        /* Tech Specs */
+        .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .spec { background: rgba(16,185,129,0.1); padding: 24px; border-radius: 16px; border: 1px solid rgba(16,185,129,0.3); text-align: center; }
+        .spec-value { font-size: 2.5rem; font-weight: bold; color: #10b981; }
+        .spec-label { color: #a0a0c0; margin-top: 8px; }
+        
+        /* Algorithm Box */
+        .algorithm { background: linear-gradient(135deg, rgba(236,72,153,0.1) 0%, rgba(139,92,246,0.05) 100%); padding: 32px; border-radius: 20px; border: 1px solid rgba(236,72,153,0.2); }
+        .algorithm h3 { color: #ec4899; margin-bottom: 16px; font-size: 1.3rem; }
+        .algorithm ul { list-style: none; padding: 0; }
+        .algorithm li { padding: 12px 0; border-bottom: 1px solid rgba(236,72,153,0.1); display: flex; align-items: center; gap: 12px; }
+        .algorithm li::before { content: '→'; color: #ec4899; }
+        
+        /* Budget Table */
+        .budget-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .budget-table th, .budget-table td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .budget-table th { color: #a855f7; font-weight: 600; }
+        .budget-table tr:hover { background: rgba(255,255,255,0.03); }
+        .budget-table .total { font-weight: bold; color: #10b981; font-size: 1.2rem; }
         
         /* Disclaimer */
-        .disclaimer {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid rgba(245, 158, 11, 0.4);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
+        .disclaimer { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); padding: 24px; border-radius: 16px; text-align: center; margin-top: 40px; }
+        .disclaimer h3 { color: #fbbf24; margin-bottom: 12px; }
         
         /* Footer */
-        footer {
-            text-align: center;
-            padding: 40px;
-            opacity: 0.7;
-        }
+        footer { text-align: center; padding: 60px 20px; opacity: 0.6; }
         
-        /* Responsive */
         @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            .container { padding: 20px; }
-            nav { flex-direction: column; }
-            nav a { text-align: center; }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.8rem; }
+            .section { padding: 24px; }
+            .cta { flex-direction: column; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Hero -->
         <header>
             <h1>🏥 Digital Saver</h1>
-            <p class="subtitle">Professional Smartwatch Health Monitoring App</p>
+            <p class="subtitle">Professional Smartwatch Health Monitoring System with Emergency Alerts</p>
+            <div class="cta">
+                <a href="https://github.com/asserkdev/Digital-saver">📂 View Code</a>
+                <a href="app/">📱 App Source</a>
+                <a href="hardware/">🔧 Hardware</a>
+                <a href="firmware/">⚡ Firmware</a>
+            </div>
         </header>
         
         <!-- Navigation -->
         <nav>
-            <a href="#screens">📱 Screens</a>
-            <a href="#files">📁 Files</a>
             <a href="#features">✨ Features</a>
-            <a href="#run">🚀 Run</a>
+            <a href="#screens">📱 Screens</a>
+            <a href="#algorithms">🧠 Algorithms</a>
+            <a href="#hardware">🔧 Hardware</a>
+            <a href="#files">📁 Files</a>
+            <a href="#budget">💰 Budget</a>
         </nav>
         
-        <!-- Screens Section -->
+        <!-- Features -->
+        <div class="section" id="features">
+            <h2>✨ Advanced Features</h2>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">❤️</div>
+                    <h3>Heart Rate + HRV</h3>
+                    <p>Real-time PPG-based heart rate monitoring with RMSSD, SDNN, pNN50 analysis. Poincaré plot visualization for advanced cardiac health assessment.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💓</div>
+                    <h3>AFib Detection</h3>
+                    <p>Machine learning-based atrial fibrillation detection algorithm with irregularity scoring, rhythm stability analysis, and automatic risk assessment.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🩸</div>
+                    <h3>Blood Pressure</h3>
+                    <p>PPG waveform analysis for BP estimation with vascular age calculation, arterial stiffness measurement, and augmentation index (AI).</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🫁</div>
+                    <h3>SpO2 + Perfusion</h3>
+                    <p>Advanced oxygen saturation monitoring with perfusion index, respiration rate estimation, and low oxygen alerts.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚠️</div>
+                    <h3>Fall Detection</h3>
+                    <p>Accelerometer-based fall detection with freefall monitoring, impact analysis, and loss of consciousness suspicion detection.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📍</div>
+                    <h3>Emergency Alerts</h3>
+                    <p>Automatic SMS and call alerts to emergency contacts with GPS location, automatic dialing, and critical health notifications.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌐</div>
+                    <h3>10 Languages</h3>
+                    <p>Full internationalization with RTL support including English, Arabic, Spanish, French, German, Chinese, Japanese, Russian, and Portuguese.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <h3>Health Score</h3>
+                    <p>Comprehensive 0-100 health assessment combining heart, BP, oxygen, activity, and sleep metrics with weighted scoring algorithm.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- App Screens -->
         <div class="section" id="screens">
-            <h2>📱 App Screens</h2>
+            <h2>📱 Professional App Screens</h2>
             <div class="screens">
                 <div class="screen">
                     <div class="screen-icon">📊</div>
                     <h3>Dashboard</h3>
-                    <p>Health score, metrics overview</p>
+                    <p>Health score, metrics overview, trends</p>
                 </div>
                 <div class="screen">
                     <div class="screen-icon">❤️</div>
                     <h3>Heart</h3>
-                    <p>HRV, AFib detection</p>
+                    <p>HRV, AFib detection, arrhythmia</p>
                 </div>
                 <div class="screen">
                     <div class="screen-icon">🩸</div>
                     <h3>Blood Pressure</h3>
-                    <p>Vascular age, trends</p>
+                    <p>Vascular age, arterial stiffness</p>
                 </div>
                 <div class="screen">
                     <div class="screen-icon">🏃</div>
                     <h3>Activity</h3>
-                    <p>Steps, calories</p>
+                    <p>Steps, calories, hourly tracking</p>
                 </div>
                 <div class="screen">
                     <div class="screen-icon">😴</div>
                     <h3>Sleep</h3>
-                    <p>Sleep stages, score</p>
+                    <p>Deep/Light/REM stages, score</p>
                 </div>
                 <div class="screen">
                     <div class="screen-icon">⚙️</div>
                     <h3>Settings</h3>
-                    <p>Profile, language</p>
+                    <p>Profile, language, thresholds</p>
                 </div>
             </div>
         </div>
         
-        <!-- Files Section -->
+        <!-- Algorithms -->
+        <div class="section" id="algorithms">
+            <h2>🧠 Advanced Algorithms</h2>
+            <div class="algorithm">
+                <h3>HRV Analysis</h3>
+                <ul>
+                    <li>RMSSD (Root Mean Square of Successive Differences)</li>
+                    <li>SDNN (Standard Deviation of NN intervals)</li>
+                    <li>pNN50 (Percentage of successive RR intervals > 50ms)</li>
+                    <li>Poincaré Plot Analysis (SD1, SD2)</li>
+                    <li>Autocorrelation-based rhythm stability</li>
+                </ul>
+            </div>
+            <div style="margin-top: 20px;" class="algorithm">
+                <h3>AFib Detection Algorithm</h3>
+                <ul>
+                    <li>RR Interval Irregularity (Coefficient of Variation)</li>
+                    <li>Successive RR Difference Variation Analysis</li>
+                    <li>Rhythm Autocorrelation Measurement</li>
+                    <li>Missing Beats Pattern Analysis</li>
+                    <li>Irregular Cluster Detection (ML-style scoring)</li>
+                </ul>
+            </div>
+            <div style="margin-top: 20px;" class="algorithm">
+                <h3>Vascular Health Analysis</h3>
+                <ul>
+                    <li>Vascular Age Estimation from Pulse Pressure + AI</li>
+                    <li>Arterial Stiffness from PWV + Augmentation Index</li>
+                    <li>Central (Aortic) Pressure Calculation</li>
+                    <li>Subendocardial Viability Ratio (SEVR)</li>
+                    <li>Wave Reflection Magnitude Analysis</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Hardware -->
+        <div class="section" id="hardware">
+            <h2>🔧 DIY Smartwatch Hardware</h2>
+            <div class="specs">
+                <div class="spec">
+                    <div class="spec-value">ESP32</div>
+                    <div class="spec-label">Main MCU + BLE</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-value">MAX30102</div>
+                    <div class="spec-label">PPG + SpO2</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-value">MPU6050</div>
+                    <div class="spec-label">6-Axis Accelerometer</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-value">1.3" OLED</div>
+                    <div class="spec-label">128x64 I2C Display</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-value">500mAh</div>
+                    <div class="spec-label">LiPo Battery</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-value">~3 Days</div>
+                    <div class="spec-label">Battery Life</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Files -->
         <div class="section" id="files">
-            <h2>📁 App Files</h2>
-            <div class="file-tree">
-<pre>
-app/
-├── <span class="folder">main.dart</span>              <span class="file"># Entry point</span>
-│
-├── <span class="folder">pubspec.yaml</span>           <span class="file"># Dependencies</span>
-│
-├── <span class="folder">screens/</span>               <span class="file"># 7 UI screens</span>
-│   ├── main_screen.dart          <span class="file"># Navigation + tabs</span>
-│   ├── dashboard_screen.dart      <span class="file"># Health score</span>
-│   ├── heart_screen.dart         <span class="file"># HRV + AFib</span>
-│   ├── blood_pressure_screen.dart <span class="file"># BP analysis</span>
-│   ├── activity_screen.dart       <span class="file"># Activity</span>
-│   ├── sleep_screen.dart          <span class="file"># Sleep stages</span>
-│   └── settings_screen.dart       <span class="file"># Settings</span>
-│
-├── <span class="folder">services/</span>                <span class="file"># Business logic</span>
-│   ├── ble_advanced_service.dart    <span class="file"># Bluetooth</span>
-│   ├── health_analysis_service.dart  <span class="file"># Analysis</span>
-│   ├── emergency_service.dart        <span class="file"># Alerts</span>
-│   └── storage_service.dart         <span class="file"># Database</span>
-│
-├── <span class="folder">models/</span>                  <span class="file"># Data models</span>
-│   └── health_models.dart        <span class="file"># Health data</span>
-│
-├── <span class="folder">widgets/</span>                 <span class="file"># UI components</span>
-│   ├── health_metric_card.dart
-│   ├── emergency_button.dart
-│   ├── trend_chart.dart
-│   └── info_card.dart
-│
-├── <span class="folder">theme/</span>                    <span class="file"># Material Design 3</span>
-│   └── app_theme.dart
-│
-└── <span class="folder">i18n/</span>                     <span class="file"># 10 languages</span>
-    └── app_localizations.dart
-</pre>
+            <h2>📁 Project Structure</h2>
+            <div class="code-block">
+<span class="comment"># Digital Saver - Complete Project</span>
+<span class="folder">app/</span>                    <span class="comment"># Flutter mobile app (20+ Dart files)</span>
+<span class="folder">├── lib/</span>
+<span class="folder">│   ├── main.dart</span>                <span class="comment"># Entry point</span>
+<span class="folder">│   ├── screens/</span>                   <span class="comment"># 6 professional screens</span>
+<span class="file">│   │   ├── dashboard_screen.dart</span>    <span class="file"># Health score dashboard</span>
+<span class="file">│   │   ├── heart_screen.dart</span>       <span class="file"># HRV + AFib analysis</span>
+<span class="file">│   │   ├── bp_screen.dart</span>          <span class="file"># Blood pressure + vascular</span>
+<span class="file">│   │   ├── activity_screen.dart</span>    <span class="file"># Steps, calories</span>
+<span class="file">│   │   ├── sleep_screen.dart</span>       <span class="file"># Sleep stages</span>
+<span class="file">│   │   └── settings_screen.dart</span>     <span class="file"># Profile, language</span>
+<span class="folder">│   ├── services/</span>                 <span class="comment"># Business logic</span>
+<span class="file">│   │   ├── ble_service.dart</span>         <span class="file"># Bluetooth LE streaming</span>
+<span class="file">│   │   ├── health_analysis_service.dart</span> <span class="file"># Complex algorithms</span>
+<span class="file">│   │   ├── emergency_service.dart</span>    <span class="file"># SMS/Call alerts</span>
+<span class="file">│   │   └── storage_service.dart</span>      <span class="file"># SQLite + SharedPreferences</span>
+<span class="folder">│   ├── models/</span>                   <span class="comment"># Data models</span>
+<span class="file">│   │   └── health_models.dart</span>      <span class="file"># Comprehensive health data</span>
+<span class="folder">│   ├── theme/</span>                    <span class="comment"># Material Design 3</span>
+<span class="folder">│   └── i18n/</span>                    <span class="comment"># 10 languages</span>
+
+<span class="folder">firmware/</span>                  <span class="comment"># ESP32 Arduino code</span>
+<span class="folder">└── esp32/</span>
+<span class="file">    └── digital_saver_firmware.cpp</span> <span class="file"># Complete firmware</span>
+
+<span class="folder">docs/</span>                        <span class="comment"># Documentation</span>
+<span class="folder">hardware/</span>                    <span class="comment"># Schematics, PCB, 3D files</span>
             </div>
         </div>
         
-        <!-- Features Section -->
-        <div class="section" id="features">
-            <h2>✨ Features</h2>
-            <div class="features">
-                <div class="feature">
-                    <h3>❤️ Heart Rate</h3>
-                    <p>Real-time monitoring + HRV analysis with RMSSD, SDNN, pNN50</p>
-                </div>
-                <div class="feature">
-                    <h3>💓 AFib Detection</h3>
-                    <p>Atrial fibrillation screening algorithm</p>
-                </div>
-                <div class="feature">
-                    <h3>🩸 Blood Pressure</h3>
-                    <p>PPG waveform analysis + vascular age estimation</p>
-                </div>
-                <div class="feature">
-                    <h3>⚠️ Fall Detection</h3>
-                    <p>Accelerometer-based loss of consciousness detection</p>
-                </div>
-                <div class="feature">
-                    <h3>📍 Emergency Alerts</h3>
-                    <p>SMS/Call with GPS location to contacts</p>
-                </div>
-                <div class="feature">
-                    <h3>🌐 10 Languages</h3>
-                    <p>English, Arabic (RTL), Spanish, French, German, Chinese, Japanese, Russian, Portuguese, Hindi</p>
-                </div>
-                <div class="feature">
-                    <h3>😴 Sleep Analysis</h3>
-                    <p>Deep/Light/REM sleep stages</p>
-                </div>
-                <div class="feature">
-                    <h3>📊 Health Score</h3>
-                    <p>Comprehensive 0-100 health assessment</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Run Section -->
-        <div class="section" id="run">
-            <h2>🚀 Run the App</h2>
-            <pre style="background: #0d1117; padding: 20px; border-radius: 12px;">
-<span style="color: #8b949e;"># Clone the repo</span>
-git clone https://github.com/asserkdev/Digital-saver.git
-cd Digital-saver/app
-
-<span style="color: #8b949e;"># Install dependencies</span>
-flutter pub get
-
-<span style="color: #8b949e;"># Run on device</span>
-flutter run</pre>
-        </div>
-        
-        <!-- Hardware Section -->
-        <div class="section">
-            <h2>🔧 DIY Smartwatch</h2>
-            <p>The app connects to a handmade ESP32 smartwatch. See <code>hardware/</code> folder for:</p>
-            <ul style="margin-top: 16px; margin-left: 20px; line-height: 2;">
-                <li>Firmware (ESP32 Arduino code)</li>
-                <li>Circuit schematics</li>
-                <li>Assembly guide</li>
-                <li>Component list (~2,810 EGP)</li>
-            </ul>
+        <!-- Budget -->
+        <div class="section" id="budget">
+            <h2>💰 Budget Breakdown (~10,000 EGP)</h2>
+            <table class="budget-table">
+                <tr><th>Component</th><th>Model</th><th>Price (EGP)</th></tr>
+                <tr><td>Main MCU</td><td>ESP32-WROOM-32</td><td>180</td></tr>
+                <tr><td>PPG Sensor</td><td>MAX30102</td><td>220</td></tr>
+                <tr><td>Accelerometer</td><td>MPU6050</td><td>45</td></tr>
+                <tr><td>Display</td><td>1.3" OLED I2C</td><td>85</td></tr>
+                <tr><td>Battery</td><td>500mAh LiPo</td><td>75</td></tr>
+                <tr><td>Charger</td><td>TP4056</td><td>25</td></tr>
+                <tr><td>PCB + Components</td><td>Custom</td><td>200</td></tr>
+                <tr><td>3D Printed Case</td><td>PLA</td><td>100</td></tr>
+                <tr><td>Strap + Band</td><td>Silicone</td><td>80</td></tr>
+                <tr><td>Misc (Wires, etc)</td><td>-</td><td>100</td></tr>
+                <tr><td colspan="2" class="total">Total Hardware</td><td class="total">~1,110 EGP</td></tr>
+                <tr><td colspan="2">Remaining for Tools & Upgrades</td><td>~8,890 EGP</td></tr>
+            </table>
         </div>
         
         <!-- Disclaimer -->
         <div class="disclaimer">
             <h3>⚠️ Medical Disclaimer</h3>
-            <p>This is a <strong>wellness/screening tool</strong> and is <strong>NOT</strong> a medical device.</p>
-            <p>Do not use for self-diagnosis. Always consult healthcare professionals.</p>
+            <p>Digital Saver is a <strong>wellness/screening tool</strong> and is <strong>NOT</strong> a medical device certified by any regulatory body (FDA, CE, etc.).</p>
+            <p>Do not use for self-diagnosis. This does not replace professional medical care. Always consult healthcare professionals for medical advice.</p>
         </div>
         
-        <!-- Footer -->
         <footer>
-            <p><strong>Digital Saver v2.0.0</strong> | <a href="https://github.com/asserkdev/Digital-saver" style="color: #58a6ff;">View on GitHub</a></p>
+            <p><strong>Digital Saver v2.0.0</strong> | MIT License | Built with ❤️ for health monitoring</p>
+            <p style="margin-top: 12px;"><a href="https://github.com/asserkdev/Digital-saver" style="color: #58a6ff;">View on GitHub</a></p>
         </footer>
     </div>
 </body>

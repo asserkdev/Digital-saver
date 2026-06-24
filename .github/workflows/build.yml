@@ -1,4 +1,4 @@
-name: Build
+name: Build Web App
 
 on:
   push:
@@ -14,8 +14,8 @@ jobs:
         with:
           flutter-version: '3.24.0'
       - run: cd app && flutter pub get
-      - run: cd app && flutter build apk --debug
+      - run: cd app && flutter build web
       - uses: actions/upload-artifact@v4
         with:
-          name: apk
-          path: app/build/app/outputs/flutter-apk/app-debug.apk
+          name: web-app
+          path: app/build/web

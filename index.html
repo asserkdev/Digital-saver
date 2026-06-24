@@ -3,463 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Saver - Smartwatch Health Monitoring System | Egyptian Government Project</title>
+    <meta name="description" content="Digital Saver - Professional Smartwatch Health Monitoring System - Egyptian Government Project">
+    <meta name="theme-color" content="#2563eb">
+    <title>Digital Saver - Health Monitoring System</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #2563eb;
-            --secondary: #7c3aed;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --light: #f8fafc;
-        }
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #7c3aed 100%);
-            color: #333;
-            line-height: 1.6;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
+            min-height: 100vh;
             color: white;
         }
-        .hero-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 20px;
-            border-radius: 50px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .hero {
+            text-align: center;
+            padding: 60px 0;
         }
         .hero h1 {
-            font-size: 3.5em;
+            font-size: 4em;
             font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
         .hero p {
             font-size: 1.3em;
             opacity: 0.95;
             max-width: 600px;
-            margin: 0 auto 30px;
+            margin: 0 auto 40px;
         }
-        .hero-budget {
-            background: rgba(16, 185, 129, 0.2);
-            border: 2px solid rgba(16, 185, 129, 0.5);
-            display: inline-block;
-            padding: 15px 40px;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-        .hero-budget .amount {
-            font-size: 2.5em;
-            font-weight: 800;
-            color: #10b981;
-        }
-        .cta-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 30px;
-        }
-        .cta {
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .cta-primary { background: white; color: var(--primary); }
-        .cta-secondary { background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.3); }
-        .cta:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .section {
+        .cta-card {
             background: white;
-            border-radius: 25px;
-            padding: 50px 40px;
-            margin: 30px 0;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            color: #1e293b;
         }
-        .section h2 { font-size: 2em; color: var(--dark); margin-bottom: 10px; }
-        .section .subtitle { color: #64748b; margin-bottom: 30px; font-size: 1.1em; }
-        .features-grid {
+        .cta-card h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #2563eb;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 700;
+            text-decoration: none;
+            margin: 20px 0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
+        }
+        .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
         }
-        .feature-card {
-            background: var(--light);
+        .feature {
+            background: rgba(255,255,255,0.1);
             border-radius: 20px;
             padding: 30px;
-            transition: all 0.3s;
+            text-align: center;
         }
-        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
-        .feature-icon { font-size: 3em; margin-bottom: 15px; }
-        .feature-card h3 { font-size: 1.3em; color: var(--dark); margin-bottom: 10px; }
-        .feature-card p { color: #64748b; font-size: 0.95em; }
-        .budget-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .budget-table th, .budget-table td { padding: 15px 20px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        .budget-table th { background: var(--light); font-weight: 600; color: var(--dark); }
-        .budget-table tr:hover { background: #f1f5f9; }
-        .budget-total { background: linear-gradient(135deg, #10b981, #059669) !important; color: white !important; font-weight: 700; font-size: 1.1em; }
-        .file-tree { background: #1e293b; border-radius: 15px; padding: 25px; font-family: 'Monaco', 'Menlo', monospace; font-size: 0.9em; color: #e2e8f0; overflow-x: auto; }
-        .file-tree .folder { color: #60a5fa; }
-        .file-tree .file { color: #a5b4fc; }
-        .file-tree .comment { color: #64748b; }
-        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 25px; }
-        .tech-item { background: var(--light); border-radius: 15px; padding: 25px; text-align: center; }
-        .tech-item .icon { font-size: 2.5em; margin-bottom: 10px; }
-        .tech-item h4 { color: var(--dark); margin-bottom: 5px; }
-        .tech-item p { color: #64748b; font-size: 0.85em; }
-        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .comparison-table th, .comparison-table td { padding: 12px 15px; text-align: center; border: 1px solid #e2e8f0; }
-        .comparison-table th { background: var(--dark); color: white; }
-        .comparison-table td:first-child { text-align: left; font-weight: 500; }
-        .check { color: var(--success); font-weight: bold; }
-        .cross { color: var(--danger); }
-        .footer { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.7); }
-        .footer a { color: white; }
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5em; }
-            .section { padding: 30px 20px; }
-            .budget-table { font-size: 0.9em; }
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        .feature h3 {
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <section class="hero">
-            <div class="hero-badge">Egyptian Government Funded Project</div>
             <h1>Digital Saver</h1>
-            <p>Smartwatch Health Monitoring System with Emergency Response<br>Professional-grade health tracking at 1/3 the cost of competitors</p>
-            <div class="hero-budget">
-                <div class="amount">~3,500 EGP</div>
-                <div class="label">Total Project Cost - Under 10,000 EGP Budget</div>
-            </div>
-            <div class="cta-buttons">
-                <a href="https://github.com/asserkdev/Digital-saver" class="cta cta-primary">View Source Code</a>
-                <a href="#documentation" class="cta cta-secondary">Documentation</a>
-            </div>
+            <p>Professional Smartwatch Health Monitoring System<br>Egyptian Government Funded Project</p>
         </section>
 
-        <section class="section" id="features">
-            <h2>Complete Health Monitoring</h2>
-            <p class="subtitle">Professional-grade features typically found in devices costing 3x more</p>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">heart</div>
-                    <h3>Heart Rate + HRV</h3>
-                    <p>Real-time heart rate monitoring with complete HRV analysis including RMSSD, SDNN, pNN50, and Poincare plots. Detects arrhythmias and AFib.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">blood</div>
-                    <h3>Blood Pressure</h3>
-                    <p>Blood pressure estimation using PPG waveform analysis. Track systolic, diastolic, MAP, pulse pressure, and vascular age.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">oxygen</div>
-                    <h3>Blood Oxygen (SpO2)</h3>
-                    <p>Continuous SpO2 monitoring with Perfusion Index, respiration rate, and low oxygen alerts for at-risk patients.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">fall</div>
-                    <h3>Fall Detection</h3>
-                    <p>Automatic fall detection using MPU6050 accelerometer. Detects impacts over 2.5g and loss of consciousness scenarios.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">alert</div>
-                    <h3>Emergency Alerts</h3>
-                    <p>Automatic SMS with GPS location to emergency contacts and 911. Includes all health data and timestamp.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">lang</div>
-                    <h3>10 Languages</h3>
-                    <p>Full support for Arabic (RTL), English, French, German, Spanish, Italian, Portuguese, Russian, Chinese, and Japanese.</p>
-                </div>
+        <div class="cta-card">
+            <h2>Open Health Monitor</h2>
+            <p style="color: #64748b; margin-bottom: 30px;">
+                Click below to launch the complete web application with dashboard, heart rate monitoring, blood pressure tracking, activity logs, and sleep analysis.
+            </p>
+            <a href="app/web/" class="cta-button">Launch Web App</a>
+        </div>
+
+        <section class="features">
+            <div class="feature">
+                <div class="feature-icon">❤️</div>
+                <h3>Heart Rate</h3>
+                <p>Real-time HRV analysis, RMSSD, SDNN, pNN50</p>
             </div>
-        </section>
-
-        <section class="section" id="budget">
-            <h2>Official Budget Breakdown</h2>
-            <p class="subtitle">All prices in Egyptian Pounds (EGP) - Ready for government receipts</p>
-            <table class="budget-table">
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Item</th>
-                        <th>Qty</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4"><strong>Smartwatch</strong></td>
-                        <td>ESP32-WROOM-32 DevKit</td>
-                        <td>1</td>
-                        <td>350 EGP</td>
-                        <td>350 EGP</td>
-                    </tr>
-                    <tr>
-                        <td>MAX30102 (Heart Rate + SpO2)</td>
-                        <td>1</td>
-                        <td>280 EGP</td>
-                        <td>280 EGP</td>
-                    </tr>
-                    <tr>
-                        <td>MPU6050 (Accelerometer)</td>
-                        <td>1</td>
-                        <td>120 EGP</td>
-                        <td>120 EGP</td>
-                    </tr>
-                    <tr>
-                        <td>OLED 0.96" Display + Battery + Case</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>790 EGP</td>
-                    </tr>
-                    <tr style="background: #f1f5f9;">
-                        <td colspan="4"><strong>Smartwatch Subtotal</strong></td>
-                        <td><strong>~1,540 EGP</strong></td>
-                    </tr>
-                    <tr>
-                        <td rowspan="2"><strong>Tools</strong></td>
-                        <td>Soldering Station + Multimeter + Hand Tools</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>1,200 EGP</td>
-                    </tr>
-                    <tr>
-                        <td>USB Cable, Breadboard, Wires</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>200 EGP</td>
-                    </tr>
-                    <tr style="background: #f1f5f9;">
-                        <td colspan="4"><strong>Tools Subtotal</strong></td>
-                        <td><strong>~1,400 EGP</strong></td>
-                    </tr>
-                    <tr>
-                        <td rowspan="2"><strong>Software</strong></td>
-                        <td>Flutter SDK</td>
-                        <td>-</td>
-                        <td>FREE</td>
-                        <td>0 EGP</td>
-                    </tr>
-                    <tr>
-                        <td>Firebase, GitHub</td>
-                        <td>-</td>
-                        <td>FREE</td>
-                        <td>0 EGP</td>
-                    </tr>
-                    <tr style="background: #f1f5f9;">
-                        <td colspan="4"><strong>Software Subtotal</strong></td>
-                        <td><strong>0 EGP</strong></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Contingency</strong></td>
-                        <td>Shipping + 10% Buffer</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>~600 EGP</td>
-                    </tr>
-                    <tr class="budget-total">
-                        <td colspan="4"><strong>GRAND TOTAL</strong></td>
-                        <td>~3,500 EGP</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 15px; color: white; text-align: center;">
-                <h3 style="margin-bottom: 5px;">6,500+ EGP Under Budget</h3>
-                <p style="opacity: 0.9; margin: 0;">Remaining funds can be used for spare parts, improvements, or documentation</p>
+            <div class="feature">
+                <div class="feature-icon">💉</div>
+                <h3>Blood Pressure</h3>
+                <p>Estimation, trends, vascular age</p>
             </div>
-        </section>
-
-        <section class="section" id="documentation">
-            <h2>Complete Project Structure</h2>
-            <p class="subtitle">Everything needed to build the complete system</p>
-            <div class="file-tree">
-<pre>
-Digital-saver/
-|-- <span class="folder">app/</span>                          # Flutter Mobile Application
-|   |-- lib/
-|   |   |-- main.dart                        # App entry point
-|   |   |-- <span class="folder">screens/</span>                       # 6 UI screens
-|   |   |   |-- dashboard_screen.dart        # Health overview + score
-|   |   |   |-- heart_screen.dart           # HRV, AFib, arrhythmia
-|   |   |   |-- bp_screen.dart              # Blood pressure + vascular
-|   |   |   |-- activity_screen.dart        # Steps, calories, exercise
-|   |   |   |-- sleep_screen.dart           # Sleep tracking + analysis
-|   |   |   |-- settings_screen.dart        # Profile, emergency contacts
-|   |   |-- <span class="folder">services/</span>                      # Business logic
-|   |   |   |-- ble_service.dart            # Bluetooth connectivity
-|   |   |   |-- health_analysis_service.dart # Advanced algorithms
-|   |   |   |-- emergency_service.dart       # Alert system + SMS
-|   |   |   |-- storage_service.dart         # Local database
-|   |   |-- <span class="folder">models/</span>                        # Data structures
-|   |   |   |-- health_models.dart          # 20+ health data types
-|   |   |-- <span class="folder">theme/</span>                         # Material Design 3
-|   |   |-- <span class="folder">i18n/</span>                         # 10 language translations
-|
-|-- <span class="folder">firmware/</span>                      # ESP32 Smartwatch
-|   |-- esp32/DigitalSaverWatch/
-|   |   |-- DigitalSaverWatch.ino           # 1000+ line firmware
-|   |   |-- platformio.ini                  # Build configuration
-|
-|-- <span class="folder">docs/hardware/</span>                 # Hardware Documentation
-|   |-- BILL_OF_MATERIALS.md               # Parts list + prices
-|   |-- WIRING_DIAGRAM.md                 # Pin connections
-|   |-- TOOLS_GUIDE.md                    # Tools + usage
-|
--- index.html                         # This website
-</pre>
+            <div class="feature">
+                <div class="feature-icon">🩸</div>
+                <h3>Blood Oxygen</h3>
+                <p>SpO2 monitoring, perfusion index</p>
             </div>
-        </section>
-
-        <section class="section">
-            <h2>Technology Stack</h2>
-            <p class="subtitle">Professional tools used by teams of experts</p>
-            <div class="tech-grid">
-                <div class="tech-item">
-                    <div class="icon">ESP32</div>
-                    <h4>ESP32</h4>
-                    <p>240MHz Dual-Core<br>WiFi + BLE4.2</p>
-                </div>
-                <div class="tech-item">
-                    <div class="icon">Flutter</div>
-                    <h4>Flutter</h4>
-                    <p>Cross-platform<br>Material Design 3</p>
-                </div>
-                <div class="tech-item">
-                    <div class="icon">MAX30102</div>
-                    <h4>MAX30102</h4>
-                    <p>PPG Heart Rate<br>SpO2 Sensor</p>
-                </div>
-                <div class="tech-item">
-                    <div class="icon">MPU6050</div>
-                    <h4>MPU6050</h4>
-                    <p>6-Axis Gyro<br>Accelerometer</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>Competitive Advantages</h2>
-            <p class="subtitle">How our system compares to commercial alternatives</p>
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Our Product</th>
-                        <th>Apple Watch</th>
-                        <th>Samsung Galaxy</th>
-                        <th>Fitbit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Heart Rate</td>
-                        <td class="check">HRV + RMSSD</td>
-                        <td class="check">Basic HRV</td>
-                        <td class="check">Basic HRV</td>
-                        <td class="check">Basic HRV</td>
-                    </tr>
-                    <tr>
-                        <td>Blood Pressure</td>
-                        <td class="check">PPG Estimation</td>
-                        <td class="cross">No</td>
-                        <td class="cross">No</td>
-                        <td class="cross">No</td>
-                    </tr>
-                    <tr>
-                        <td>Fall Detection</td>
-                        <td class="check">MPU6050</td>
-                        <td class="check">Yes</td>
-                        <td class="check">Yes</td>
-                        <td class="check">Yes</td>
-                    </tr>
-                    <tr>
-                        <td>Emergency SMS</td>
-                        <td class="check">GPS + Data</td>
-                        <td class="check">Yes</td>
-                        <td class="cross">No</td>
-                        <td class="cross">No</td>
-                    </tr>
-                    <tr>
-                        <td>Multi-Language</td>
-                        <td class="check">10 Languages</td>
-                        <td>~3</td>
-                        <td>~5</td>
-                        <td>~4</td>
-                    </tr>
-                    <tr>
-                        <td>Price (EGP)</td>
-                        <td class="check">~3,500</td>
-                        <td>15,000+</td>
-                        <td>12,000+</td>
-                        <td>5,000+</td>
-                    </tr>
-                    <tr>
-                        <td>Open Source</td>
-                        <td class="check">Complete</td>
-                        <td class="cross">No</td>
-                        <td class="cross">No</td>
-                        <td class="cross">No</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="section">
-            <h2>Advanced Algorithms</h2>
-            <p class="subtitle">Medical-grade analysis in a budget device</p>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <h3>HRV Analysis</h3>
-                    <p><strong>RMSSD:</strong> Root Mean Square of Successive Differences<br>
-                    <strong>SDNN:</strong> Standard Deviation of NN intervals<br>
-                    <strong>pNN50:</strong> Percentage of successive RR > 50ms<br>
-                    <strong>Reference:</strong> Normal RMSSD = 20-80ms</p>
-                </div>
-                <div class="feature-card">
-                    <h3>AFib Detection</h3>
-                    <p>RR interval irregularity analysis using Coefficient of Variation (CV).<br>
-                    <strong>Sensitivity:</strong> 95%<br>
-                    <strong>Specificity:</strong> 90%<br>
-                    <strong>CV Threshold:</strong> > 10%</p>
-                </div>
-                <div class="feature-card">
-                    <h3>BP Estimation</h3>
-                    <p>PPG waveform analysis using Pulse Transit Time (PTT) method.<br>
-                    Combines HRV, Perfusion Index, and HR for estimation.<br>
-                    <strong>Accuracy:</strong> +/-10 mmHg</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Fall Detection</h3>
-                    <p>MPU6050 acceleration threshold: > 2.5g<br>
-                    Free-fall detection: < 0.5g for > 100ms<br>
-                    Orientation change: > 90 degrees<br>
-                    <strong>Alert:</strong> Immediate SMS + Vibration</p>
-                </div>
+            <div class="feature">
+                <div class="feature-icon">⚠️</div>
+                <h3>Fall Detection</h3>
+                <p>Emergency alerts with GPS location</p>
             </div>
         </section>
 
         <footer class="footer">
-            <p><strong>Digital Saver</strong> | Egyptian Government Funded Project</p>
-            <p style="margin-top: 10px;">
-                <a href="https://github.com/asserkdev/Digital-saver">GitHub Repository</a> - 
-                <a href="docs/hardware/BILL_OF_MATERIALS.md">Bill of Materials</a> - 
-                <a href="docs/hardware/WIRING_DIAGRAM.md">Wiring Guide</a>
-            </p>
-            <p style="margin-top: 20px; font-size: 0.9em;">Built for Egypt</p>
+            <p><strong>Digital Saver</strong> | Built for Egypt 🇪🇬</p>
+            <p style="margin-top: 10px;">Budget: ~3,500 EGP (Under 10,000 EGP)</p>
         </footer>
     </div>
 </body>

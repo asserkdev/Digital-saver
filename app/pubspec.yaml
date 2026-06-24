@@ -9,73 +9,42 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.6
+  flutter_localizations:
+    sdk: flutter
   
   # State Management
   provider: ^6.1.1
-  flutter_riverpod: ^2.4.9
-  riverpod_annotation: ^2.3.3
   
   # Bluetooth LE
-  flutter_blue_plus: ^1.31.5
+  flutter_blue_plus: ^1.31.0
   
   # Local Storage
   shared_preferences: ^2.2.2
   sqflite: ^2.3.0
   path_provider: ^2.1.1
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
   
   # Charts & Visualization
   fl_chart: ^0.66.0
-  syncfusion_flutter_gauges: ^23.1.44
-  syncfusion_flutter_charts: ^23.1.44
+  percent_indicator: ^4.2.3
   
   # UI Components
-  percent_indicator: ^4.2.3
-  shimmer: ^3.0.0
-  flutter_animate: ^4.3.0
-  google_fonts: ^6.1.0
+  cupertino_icons: ^1.0.6
   
   # Localization
-  flutter_localizations:
-    sdk: flutter
-  intl: ^0.18.1
+  intl: any
   
   # Notifications & Alerts
-  flutter_local_notifications: ^16.3.0
   url_launcher: ^6.2.2
   geolocator: ^10.1.0
+  permission_handler: ^11.1.0
   
   # Utilities
   uuid: ^4.2.2
-  crypto: ^3.0.3
-  collection: ^1.18.0
-  vector_math: ^2.1.4
-  # Note: 'math' is built-in via 'dart:math', no package needed
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
-  build_runner: ^2.4.7
-  riverpod_generator: ^2.3.9
-  hive_generator: ^2.0.1
 
 flutter:
   uses-material-design: true
-  
-  assets:
-    - assets/images/
-    - assets/icons/
-
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins-Regular.ttf
-        - asset: assets/fonts/Poppins-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Poppins-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Poppins-Bold.ttf
-          weight: 700

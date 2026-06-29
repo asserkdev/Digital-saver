@@ -2,66 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/ble_service.dart';
 import '../services/health_analysis_service.dart';
+import '../theme/app_theme.dart';
 
 class BpScreen extends StatelessWidget {
   const BpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<BleService>(
-      builder: (context, ble, _) {
-        final bp = ble.bloodPressure;
-        return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFF),
-          appBar: AppBar(
-            title: const Text('Blood Pressure', style: TextStyle(fontWeight: FontWeight.bold)),
-            backgroundColor: Colors.white,
-            foregroundColor: const Color(0xFF1e3a5f),
-            elevation: 0,
-          ),
-          body: ble.isConnected
-              ? SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _BpHero(bp: bp),
-                      const SizedBox(height: 16),
-                      _VascularCard(bp: bp),
-                      const SizedBox(height: 16),
-                      _BpCategoryChart(current: bp.category),
-                      const SizedBox(height: 16),
-                      _BpAdvancedGrid(bp: bp),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
-                )
-              : const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.bluetooth_disabled, size: 64, color: Colors.grey),
-                      SizedBox(height: 16),
-                      Text('Connect your watch to view BP data',
-                          style: TextStyle(color: Colors.grey, fontSize: 16)),
-                    ],
-                  ),
-                ),
-        );
-      },
+    final ble = context.watch<BleService>();
+    final parts = ble.bloodPressure.split('/');
+    final sys = parts.length == 2 ? double.tryParse(parts[0]) ?? 0 : 0.0;
+    final dia = parts.length == 2 ? double.tryParse(parts[1]) ?? 0 : 0.0;
+    final bpCategory = ble.isConnected ? HealthAnalysisService.getBPCategory(sys, dia) : null;
+    final vasAge = ble.isConnected && sys > 0 ? HealthAnalysisService.estimateVascularAge(sys, dia) : null;
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        title: const Text('Blood Pressure', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(children: [
+          _BPHero(sys: sys, dia: dia, category: bpCategory),
+          const SizedBox(height: 16),
+          _BPMetrics(sys: sys, dia: dia, vasAge: vasAge, ble: ble),
+          const SizedBox(height: 16),
+          _BPGauge(sys: sys),
+          const SizedBox(height: 16),
+          _BPCategoryGuide(currentSys: sys, currentDia: dia),
+          const SizedBox(height: 16),
+          _BPTips(sys: sys),
+          const SizedBox(height: 100),
+        ]),
+      ),
     );
   }
 }
 
-class _BpHero extends StatelessWidget {
-  final bp;
-  const _BpHero({required this.bp});
+class _BPHero extends StatelessWidget {
+  final double sys, dia;
+  final BPCategory? category;
+  const _BPHero({required this.sys, required this.dia, this.category});
 
   Color get _catColor {
-    switch (bp.category) {
-      case 'Normal': return const Color(0xFF22C55E);
-      case 'Elevated': return const Color(0xFFF59E0B);
-      case 'High Stage 1': return const Color(0xFFF97316);
-      default: return const Color(0xFFEF4444);
+    switch (category?.name) {
+      case 'Normal': return AppColors.success;
+      case 'Elevated': return AppColors.warning;
+      case 'High Stage 1': case 'High Stage 2': return AppColors.danger;
+      case 'Hypertensive Crisis': return AppColors.dangerDark;
+      default: return AppColors.primary;
     }
   }
 
@@ -69,279 +61,252 @@ class _BpHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [const Color(0xFF2563eb), const Color(0xFF1e3a5f)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
+        gradient: AppColors.gradientBP,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: AppShadows.coloredCard(AppColors.bpBlue),
       ),
-      child: Column(
-        children: [
-          const Icon(Icons.water_drop, color: Colors.white, size: 36),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                bp.systolic > 0 ? '${bp.systolic}' : '--',
-                style: const TextStyle(
-                  color: Colors.white, fontSize: 64, fontWeight: FontWeight.bold, height: 1,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: Text('/', style: TextStyle(color: Colors.white60, fontSize: 32)),
-              ),
-              Text(
-                bp.diastolic > 0 ? '${bp.diastolic}' : '--',
-                style: const TextStyle(
-                  color: Colors.white70, fontSize: 48, fontWeight: FontWeight.bold, height: 1,
-                ),
-              ),
-            ],
+      child: Column(children: [
+        const Icon(Icons.water_drop, color: Colors.white, size: 32),
+        const SizedBox(height: 8),
+        const Text('Blood Pressure', style: TextStyle(color: Colors.white70, fontSize: 14, letterSpacing: 0.5)),
+        const SizedBox(height: 12),
+        Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end, children: [
+          Column(children: [
+            const Text('SYS', style: TextStyle(color: Colors.white60, fontSize: 12)),
+            Text(sys > 0 ? '${sys.round()}' : '--',
+              style: const TextStyle(color: Colors.white, fontSize: 60, fontWeight: FontWeight.bold, height: 1)),
+          ]),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: Text(' / ', style: TextStyle(color: Colors.white54, fontSize: 36, fontWeight: FontWeight.w300)),
           ),
-          const Text('mmHg  (Systolic / Diastolic)',
-              style: TextStyle(color: Colors.white60, fontSize: 13)),
-          const SizedBox(height: 16),
+          Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+            const Text('DIA', style: TextStyle(color: Colors.white60, fontSize: 12)),
+            Text(dia > 0 ? '${dia.round()}' : '--',
+              style: const TextStyle(color: Colors.white, fontSize: 60, fontWeight: FontWeight.bold, height: 1)),
+          ]),
+        ]),
+        const Text('mmHg', style: TextStyle(color: Colors.white60, fontSize: 14)),
+        if (category != null) ...[
+          const SizedBox(height: 14),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
             decoration: BoxDecoration(
               color: _catColor.withOpacity(0.25),
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: _catColor.withOpacity(0.5)),
             ),
-            child: Text(
-              bp.category,
-              style: TextStyle(color: _catColor, fontWeight: FontWeight.bold),
-            ),
+            child: Text(category!.name, style: TextStyle(color: _catColor == AppColors.dangerDark ? Colors.red.shade200 : Colors.white,
+              fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ],
-      ),
+      ]),
     );
   }
 }
 
-class _VascularCard extends StatelessWidget {
-  final bp;
-  const _VascularCard({required this.bp});
+class _BPMetrics extends StatelessWidget {
+  final double sys, dia;
+  final int? vasAge;
+  final BleService ble;
+  const _BPMetrics({required this.sys, required this.dia, this.vasAge, required this.ble});
 
   @override
   Widget build(BuildContext context) {
+    final map = sys > 0 ? sys - dia : 0.0;
+    final pp = sys > 0 ? sys - dia : 0.0;
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Vascular Health', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _CircleStat(
-                label: 'MAP',
-                value: bp.map > 0 ? '${bp.map}' : '--',
-                unit: 'mmHg',
-                color: const Color(0xFF2563eb),
-              ),
-              _CircleStat(
-                label: 'Pulse Press.',
-                value: bp.pulsePressure > 0 ? '${bp.pulsePressure}' : '--',
-                unit: 'mmHg',
-                color: const Color(0xFF7c3aed),
-              ),
-              _CircleStat(
-                label: 'Vasc. Age',
-                value: bp.systolic > 0 ? '${bp.vascularAge}' : '--',
-                unit: 'yrs',
-                color: const Color(0xFFF59E0B),
-              ),
-            ],
-          ),
-        ],
-      ),
+      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(20), boxShadow: AppShadows.card),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Advanced Metrics', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.textPrimary)),
+        const SizedBox(height: 14),
+        Row(children: [
+          Expanded(child: _Metric(label: 'Pulse Pressure', value: sys > 0 ? '${pp.round()} mmHg' : '--', subtitle: 'Normal: 40–60 mmHg', color: AppColors.primary)),
+          const SizedBox(width: 12),
+          Expanded(child: _Metric(label: 'MAP', value: sys > 0 ? '${((sys + 2 * dia) / 3).round()} mmHg' : '--', subtitle: 'Normal: 70–100 mmHg', color: AppColors.accent)),
+        ]),
+        const SizedBox(height: 12),
+        Row(children: [
+          Expanded(child: _Metric(label: 'Vascular Age', value: vasAge != null ? '$vasAge yrs' : '--', subtitle: 'vs your actual age', color: AppColors.heartRed)),
+          const SizedBox(width: 12),
+          Expanded(child: _Metric(label: 'HRV Influence', value: ble.hrv > 0 ? '${ble.hrv.round()} ms' : '--', subtitle: 'Higher = better vascular tone', color: AppColors.success)),
+        ]),
+      ]),
     );
   }
 }
 
-class _CircleStat extends StatelessWidget {
-  final String label, value, unit;
+class _Metric extends StatelessWidget {
+  final String label, value, subtitle;
   final Color color;
-  const _CircleStat({required this.label, required this.value, required this.unit, required this.color});
-
+  const _Metric({required this.label, required this.value, required this.subtitle, required this.color});
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color.withOpacity(0.1),
-            border: Border.all(color: color.withOpacity(0.4), width: 2),
-          ),
-          child: Center(
-            child: Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18)),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(unit, style: TextStyle(color: Colors.grey[500], fontSize: 11)),
-        Text(label, style: TextStyle(color: Colors.grey[700], fontSize: 11, fontWeight: FontWeight.w500)),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(color: color.withOpacity(0.06), borderRadius: BorderRadius.circular(14)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 0.3)),
+      const SizedBox(height: 4),
+      Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: AppColors.textPrimary, height: 1.1)),
+      const SizedBox(height: 3),
+      Text(subtitle, style: const TextStyle(color: AppColors.textMuted, fontSize: 10, height: 1.3)),
+    ]),
+  );
 }
 
-class _BpCategoryChart extends StatelessWidget {
-  final String current;
-  const _BpCategoryChart({required this.current});
+class _BPGauge extends StatelessWidget {
+  final double sys;
+  const _BPGauge({required this.sys});
 
   @override
   Widget build(BuildContext context) {
-    final categories = HealthAnalysisService.bpCategoryInfo();
+    final ranges = [
+      (label: 'Low', max: 90.0, color: const Color(0xFF60A5FA)),
+      (label: 'Normal', max: 120.0, color: AppColors.success),
+      (label: 'Elevated', max: 130.0, color: AppColors.warning),
+      (label: 'High', max: 160.0, color: AppColors.danger),
+      (label: 'Crisis', max: 200.0, color: AppColors.dangerDark),
+    ];
+
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('BP Categories', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          const SizedBox(height: 12),
-          ...categories.map((cat) {
-            final isActive = cat['label'] == current;
-            final color = Color(cat['color'] as int);
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: isActive ? color.withOpacity(0.12) : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: isActive ? color : Colors.transparent,
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      cat['label'] as String,
-                      style: TextStyle(
-                        fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                        color: isActive ? color : Colors.grey[700],
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '${cat['systolic']} / ${cat['diastolic']}',
-                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                  ),
-                  if (isActive) ...[
-                    const SizedBox(width: 8),
-                    Icon(Icons.arrow_left, color: color, size: 18),
-                  ],
-                ],
-              ),
+      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(20), boxShadow: AppShadows.card),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Systolic Gauge', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.textPrimary)),
+        const SizedBox(height: 14),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Row(children: ranges.map((r) {
+            final w = (r.max - (r == ranges.first ? 60 : ranges[ranges.indexOf(r) - 1].max)).clamp(0, 200) / 140;
+            return Expanded(
+              flex: ((r.max - (r == ranges.first ? 60 : ranges[ranges.indexOf(r) - 1].max)).clamp(0, 200) / 10).round(),
+              child: Container(height: 12, color: r.color),
             );
-          }),
+          }).toList()),
+        ),
+        const SizedBox(height: 8),
+        if (sys > 0) ...[
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text('90', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
+            const Text('120', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
+            const Text('130', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
+            const Text('160', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
+            const Text('200+', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
+          ]),
+          const SizedBox(height: 8),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Icon(Icons.arrow_drop_up, color: AppColors.primary, size: 20),
+            Text('Your SBP: ${sys.round()} mmHg', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
+          ]),
         ],
-      ),
+      ]),
     );
   }
 }
 
-class _BpAdvancedGrid extends StatelessWidget {
-  final bp;
-  const _BpAdvancedGrid({required this.bp});
+class _BPCategoryGuide extends StatelessWidget {
+  final double currentSys, currentDia;
+  const _BPCategoryGuide({required this.currentSys, required this.currentDia});
 
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.8,
-      children: [
-        _InfoTile(
-          label: 'Augmentation Index',
-          value: bp.augmentationIndex > 0 ? '${bp.augmentationIndex.toStringAsFixed(0)}%' : '--',
-          icon: Icons.show_chart,
-          color: const Color(0xFF2563eb),
-        ),
-        _InfoTile(
-          label: 'Pulse Wave Velocity',
-          value: bp.pulseWaveVelocity > 0 ? '${bp.pulseWaveVelocity.toStringAsFixed(1)} m/s' : '--',
-          icon: Icons.speed,
-          color: const Color(0xFF7c3aed),
-        ),
-        _InfoTile(
-          label: 'Confidence',
-          value: bp.confidence > 0 ? '${bp.confidence}%' : '--',
-          icon: Icons.verified,
-          color: const Color(0xFF22C55E),
-        ),
-        _InfoTile(
-          label: 'Resp. Rate',
-          value: '--',
-          icon: Icons.air,
-          color: const Color(0xFFF59E0B),
-        ),
-      ],
-    );
+  static const categories = [
+    (name: 'Normal', sys: '< 120', dia: '< 80', color: AppColors.success, advice: 'Maintain healthy lifestyle'),
+    (name: 'Elevated', sys: '120–129', dia: '< 80', color: AppColors.warning, advice: 'Monitor regularly'),
+    (name: 'High Stage 1', sys: '130–139', dia: '80–89', color: AppColors.danger, advice: 'Lifestyle changes needed'),
+    (name: 'High Stage 2', sys: '≥ 140', dia: '≥ 90', color: Color(0xFFB91C1C), advice: 'See a doctor'),
+    (name: 'Hypertensive Crisis', sys: '> 180', dia: '> 120', color: Color(0xFF7F1D1D), advice: 'Emergency care NOW'),
+  ];
+
+  bool _isActive(String name) {
+    if (currentSys <= 0) return false;
+    switch (name) {
+      case 'Normal': return currentSys < 120 && currentDia < 80;
+      case 'Elevated': return currentSys >= 120 && currentSys < 130;
+      case 'High Stage 1': return (currentSys >= 130 && currentSys < 140) || (currentDia >= 80 && currentDia < 90);
+      case 'High Stage 2': return currentSys >= 140 || currentDia >= 90;
+      case 'Hypertensive Crisis': return currentSys > 180 || currentDia > 120;
+    }
+    return false;
   }
-}
-
-class _InfoTile extends StatelessWidget {
-  final String label, value;
-  final IconData icon;
-  final Color color;
-  const _InfoTile({required this.label, required this.value, required this.icon, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 10), maxLines: 2),
-                Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
-              ],
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(20), boxShadow: AppShadows.card),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Classification Guide', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.textPrimary)),
+        const SizedBox(height: 4),
+        const Text('AHA / ACC Guidelines', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+        const SizedBox(height: 14),
+        ...categories.map((c) {
+          final active = _isActive(c.name);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: active ? c.color.withOpacity(0.08) : Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: active ? Border.all(color: c.color.withOpacity(0.4)) : null,
             ),
-          ),
-        ],
-      ),
+            child: Row(children: [
+              Container(width: 4, height: 36, decoration: BoxDecoration(color: c.color, borderRadius: BorderRadius.circular(4))),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(c.name, style: TextStyle(fontWeight: FontWeight.bold, color: active ? c.color : AppColors.textSecondary, fontSize: 13)),
+                Text('SBP ${c.sys} · DBP ${c.dia} mmHg', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              ])),
+              if (active) Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(color: c.color, borderRadius: BorderRadius.circular(8)),
+                child: const Text('YOU', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+              ) else Text(c.advice, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+            ]),
+          );
+        }),
+      ]),
     );
   }
+}
+
+class _BPTips extends StatelessWidget {
+  final double sys;
+  const _BPTips({required this.sys});
+
+  List<String> get _tips {
+    if (sys <= 0 || sys < 120) {
+      return ['Great BP! Keep exercising regularly (150 min/week).', 'Maintain a low-sodium diet (< 2300 mg/day).', 'Stay hydrated with 2–3 litres of water daily.'];
+    } else if (sys < 130) {
+      return ['Reduce sodium intake to < 1500 mg/day.', 'Try DASH diet: fruits, vegetables, whole grains.', 'Limit alcohol to ≤ 1 drink/day.'];
+    } else {
+      return ['Monitor BP twice daily at same time.', 'Walk 30 minutes daily — reduces SBP by 4–9 mmHg.', 'Consult your doctor about medication options.', 'Reduce stress with mindfulness or breathing exercises.'];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      color: AppColors.primary.withOpacity(0.04),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+    ),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Row(children: [
+        Icon(Icons.tips_and_updates, color: AppColors.primary, size: 18),
+        SizedBox(width: 8),
+        Text('Blood Pressure Tips', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 14)),
+      ]),
+      const SizedBox(height: 12),
+      ..._tips.map((t) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('• ', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+          Expanded(child: Text(t, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4))),
+        ]),
+      )),
+    ]),
+  );
 }

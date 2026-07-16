@@ -47,6 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final ble = context.watch<BleService>();
+    final auth = context.watch<AuthProvider>();
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFF),
       appBar: AppBar(

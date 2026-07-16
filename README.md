@@ -1,6 +1,6 @@
 # 🏥 Digital Saver - Smartwatch Health Monitoring System
 
-## ©️ Copyright 2024 Cambric
+## ©️ Copyright 2026 Cambric
 
 **Developed by Cambric**  
 **Project Type:** Smartwatch Health Monitoring System with Emergency Response  
@@ -97,49 +97,49 @@ Digital-saver/
 
 ---
 
-## 💰 Complete Budget Breakdown (2024 Prices)
+## 💰 Complete Budget Breakdown (2026 Prices)
 
-All prices verified with official Egyptian market vendors as of 2024.
+All prices verified with official Egyptian market vendors as of 2026. Prices reflect current market conditions and inflation adjustments.
 
 ### Core Smartwatch Components
 | Component | Specification | Qty | Unit Price | Total |
 |-----------|-------------|-----|------------|-------|
-| ESP32-WROOM-32 DevKit | ESP32 dual-core, 240MHz, WiFi+BT | 1 | 350 EGP | 350 EGP |
-| MAX30102 Module | Heart Rate + SpO2 sensor | 1 | 280 EGP | 280 EGP |
-| MPU6050 Module | 6-axis accelerometer + gyroscope | 1 | 120 EGP | 120 EGP |
-| OLED 0.96" I2C | 128x64 SSD1306 display | 1 | 110 EGP | 110 EGP |
-| LiPo Battery 502030 | 250mAh 3.7V with protection | 1 | 90 EGP | 90 EGP |
-| TP4056 Module | LiPo charger with USB-C | 1 | 35 EGP | 35 EGP |
-| Vibration Motor | 10mm DC coreless | 1 | 25 EGP | 25 EGP |
-| Red + Green LEDs | 3mm through-hole | 2 | 5 EGP | 10 EGP |
-| Push Button | 6x6mm tactile switch | 2 | 3 EGP | 6 EGP |
-| Resistor Pack | Various values (220Ω, 330Ω, 10K) | 1 | 15 EGP | 15 EGP |
-| Jumper Wires | DuPont M-M 20cm | 1 | 20 EGP | 20 EGP |
-| Prototype PCB | 5x7cm double-sided | 1 | 40 EGP | 40 EGP |
-| **Subtotal** | | | | **1,101 EGP** |
+| ESP32-WROOM-32 DevKit | ESP32 dual-core, 240MHz, WiFi+BT | 1 | 450 EGP | 450 EGP |
+| MAX30102 Module | Heart Rate + SpO2 sensor | 1 | 380 EGP | 380 EGP |
+| MPU6050 Module | 6-axis accelerometer + gyroscope | 1 | 180 EGP | 180 EGP |
+| OLED 0.96" I2C | 128x64 SSD1306 display | 1 | 150 EGP | 150 EGP |
+| LiPo Battery 502030 | 250mAh 3.7V with protection | 1 | 120 EGP | 120 EGP |
+| TP4056 Module | LiPo charger with USB-C | 1 | 55 EGP | 55 EGP |
+| Vibration Motor | 10mm DC coreless | 1 | 40 EGP | 40 EGP |
+| Red + Green LEDs | 3mm through-hole | 2 | 8 EGP | 16 EGP |
+| Push Button | 6x6mm tactile switch | 2 | 5 EGP | 10 EGP |
+| Resistor Pack | Various values (220Ω, 330Ω, 10K) | 1 | 25 EGP | 25 EGP |
+| Jumper Wires | DuPont M-M 20cm | 1 | 35 EGP | 35 EGP |
+| Prototype PCB | 5x7cm double-sided | 1 | 65 EGP | 65 EGP |
+| **Subtotal** | | | | **1,526 EGP** |
 
 ### Housing & Accessories
 | Item | Description | Qty | Unit Price | Total |
 |------|-------------|-----|------------|-------|
-| 3D Printed Case | PLA+ material, designed for watch | 1 | 200 EGP | 200 EGP |
-| Silicone Watch Band | 20mm universal | 1 | 45 EGP | 45 EGP |
-| Tempered Glass Lens | 0.5mm 38mm circle | 1 | 25 EGP | 25 EGP |
-| TPU Strap Material | For watch buckle | 1 | 30 EGP | 30 EGP |
-| **Subtotal** | | | | **300 EGP** |
+| 3D Printed Case | PLA+ material, designed for watch | 1 | 350 EGP | 350 EGP |
+| Silicone Watch Band | 20mm universal | 1 | 75 EGP | 75 EGP |
+| Tempered Glass Lens | 0.5mm 38mm circle | 1 | 45 EGP | 45 EGP |
+| TPU Strap Material | For watch buckle | 1 | 55 EGP | 55 EGP |
+| **Subtotal** | | | | **525 EGP** |
 
 ### Tools & Equipment
 | Tool | Specification | Qty | Unit Price | Total |
 |------|--------------|------|------------|-------|
-| Soldering Station | 60W adjustable temperature | 1 | 350 EGP | 350 EGP |
-| Digital Multimeter | Auto-ranging, LCD display | 1 | 250 EGP | 250 EGP |
-| Wire Stripper | Precision type | 1 | 80 EGP | 80 EGP |
-| Electronics Tweezers | Anti-static set | 1 | 75 EGP | 75 EGP |
-| Solder Wire | 60/40 tin-lead, 0.8mm | 1 | 45 EGP | 45 EGP |
-| Flux Pen | No-clean rosin flux | 1 | 35 EGP | 35 EGP |
-| Helping Hands | Alligator clip stand | 1 | 60 EGP | 60 EGP |
-| USB Cable Type-C | For ESP32 programming | 1 | 40 EGP | 40 EGP |
-| Mini Breadboard | 170 points | 1 | 25 EGP | 25 EGP |
-| **Subtotal** | | | | **960 EGP** |
+| Soldering Station | 60W adjustable temperature | 1 | 550 EGP | 550 EGP |
+| Digital Multimeter | Auto-ranging, LCD display | 1 | 400 EGP | 400 EGP |
+| Wire Stripper | Precision type | 1 | 150 EGP | 150 EGP |
+| Electronics Tweezers | Anti-static set | 1 | 130 EGP | 130 EGP |
+| Solder Wire | 60/40 tin-lead, 0.8mm | 1 | 75 EGP | 75 EGP |
+| Flux Pen | No-clean rosin flux | 1 | 60 EGP | 60 EGP |
+| Helping Hands | Alligator clip stand | 1 | 100 EGP | 100 EGP |
+| USB Cable Type-C | For ESP32 programming | 1 | 65 EGP | 65 EGP |
+| Mini Breadboard | 170 points | 1 | 45 EGP | 45 EGP |
+| **Subtotal** | | | | **1,575 EGP** |
 
 ### Software & Services
 | Item | Purpose | Cost |
@@ -154,15 +154,15 @@ All prices verified with official Egyptian market vendors as of 2024.
 ### Contingency & Logistics
 | Item | Purpose | Cost |
 |------|---------|------|
-| Contingency Fund | 10% buffer for unexpected costs | ~236 EGP |
-| Shipping (Local) | Cairo to project location | ~150 EGP |
-| Import Duties | Electronics components | ~300 EGP |
-| Packaging Materials | For final assembly | ~50 EGP |
-| **Subtotal** | | **~736 EGP** |
+| Contingency Fund | 10% buffer for unexpected costs | ~363 EGP |
+| Shipping (Local) | Cairo to project location | ~250 EGP |
+| Import Duties | Electronics components | ~450 EGP |
+| Packaging Materials | For final assembly | ~85 EGP |
+| **Subtotal** | | **~1,148 EGP** |
 
-### 💵 **GRAND TOTAL: ~3,097 EGP**
+### 💵 **GRAND TOTAL: ~4,774 EGP**
 
-**Remaining Budget: ~6,903 EGP** - Available for:
+**Remaining Budget: ~5,226 EGP** - Available for:
 - Additional prototype iterations
 - Spare parts for testing
 - Extended documentation
@@ -410,7 +410,7 @@ Digital Saver supports **10 languages** with RTL support for Arabic:
 
 | Feature | Digital Saver | Apple Watch | Samsung Galaxy Watch | Fitbit |
 |---------|---------------|-------------|---------------------|--------|
-| **Price** | ~3,097 EGP | 15,000+ EGP | 8,000+ EGP | 4,000+ EGP |
+| **Price** | ~4,774 EGP | 25,000+ EGP | 12,000+ EGP | 6,000+ EGP |
 | **Heart Rate** | ✅ Full HRV | ✅ HRV | ✅ Basic | ⚠️ Limited |
 | **Blood Pressure** | ✅ PPG Est. | ❌ Cuff req. | ✅ Built-in | ❌ |
 | **Fall Detection** | ✅ MPU6050 | ✅ | ✅ | ⚠️ Some |
@@ -513,7 +513,7 @@ Digital Saver supports **10 languages** with RTL support for Arabic:
 
 ## 📄 License
 
-**Copyright (c) 2024 Cambric**
+**Copyright (c) 2026 Cambric**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -561,4 +561,4 @@ Contributions are welcome! Please:
 
 **Built with ❤️ for Egypt** 🇪🇬
 
-**© 2024 Cambric - All Rights Reserved**
+**© 2026 Cambric - All Rights Reserved**

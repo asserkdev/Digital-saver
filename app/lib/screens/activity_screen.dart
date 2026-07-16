@@ -43,7 +43,7 @@ class _StepHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const goal = 10000;
-    final steps = ble.isConnected ? ble.steps : 0;
+    final steps = ble.isConnected ? ble.activity.steps : 0;
     final pct = (steps / goal).clamp(0.0, 1.0);
 
     return Container(
@@ -85,11 +85,11 @@ class _MetricsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(children: [
-    Expanded(child: _MetricCard(label: 'Calories', value: ble.isConnected ? '${ble.calories.round()}' : '--', unit: 'kcal', icon: Icons.local_fire_department, color: AppColors.heartRed)),
+    Expanded(child: _MetricCard(label: 'Calories', value: ble.isConnected ? '${ble.activity.calories.round()}' : '--', unit: 'kcal', icon: Icons.local_fire_department, color: AppColors.heartRed)),
     const SizedBox(width: 12),
-    Expanded(child: _MetricCard(label: 'Distance', value: ble.isConnected ? '${(ble.steps * 0.762 / 1000).toStringAsFixed(2)}' : '--', unit: 'km', icon: Icons.map_outlined, color: AppColors.primary)),
+    Expanded(child: _MetricCard(label: 'Distance', value: ble.isConnected ? '${(ble.activity.steps * 0.762 / 1000).toStringAsFixed(2)}' : '--', unit: 'km', icon: Icons.map_outlined, color: AppColors.primary)),
     const SizedBox(width: 12),
-    Expanded(child: _MetricCard(label: 'Active', value: ble.isConnected ? '${(ble.steps / 1200).floor()}' : '--', unit: 'min', icon: Icons.timer_outlined, color: AppColors.success)),
+    Expanded(child: _MetricCard(label: 'Active', value: ble.isConnected ? '${(ble.activity.steps / 1200).floor()}' : '--', unit: 'min', icon: Icons.timer_outlined, color: AppColors.success)),
   ]);
 }
 
@@ -123,7 +123,7 @@ class _HourlyChart extends StatelessWidget {
     return List.generate(24, (i) {
       final s = i <= hour
           ? (ble.isConnected
-              ? (ble.steps / (hour + 1) * (0.5 + 0.5 * (i % 3 == 0 ? 1.4 : i % 2 == 0 ? 0.7 : 0.9))).round().clamp(0, 999)
+              ? (ble.activity.steps / (hour + 1) * (0.5 + 0.5 * (i % 3 == 0 ? 1.4 : i % 2 == 0 ? 0.7 : 0.9))).round().clamp(0, 999)
               : (300 + (i % 3 == 0 ? 400 : i % 2 == 0 ? 150 : 250)))
           : 0;
       return BarChartGroupData(x: i, barRods: [BarChartRodData(
@@ -183,9 +183,9 @@ class _ActivityRings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final steps = ble.isConnected ? ble.steps : 0;
-    final cal = ble.isConnected ? ble.calories.round() : 0;
-    final active = ble.isConnected ? (ble.steps / 1200).floor() : 0;
+    final steps = ble.isConnected ? ble.activity.steps : 0;
+    final cal = ble.isConnected ? ble.activity.calories.round() : 0;
+    final active = ble.isConnected ? (ble.activity.steps / 1200).floor() : 0;
 
     return Container(
       padding: const EdgeInsets.all(18),

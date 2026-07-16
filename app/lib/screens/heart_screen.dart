@@ -128,7 +128,7 @@ class _HRVPanel extends StatelessWidget {
           const SizedBox(height: 14),
           const Divider(height: 1),
           const SizedBox(height: 12),
-          _StressBar(hrv: ble.hrv),
+          _StressBar(hrv: ble.heartRate.hrv),
         ],
       ]),
     );
@@ -200,7 +200,7 @@ class _RRChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spots = ble.rrHistory.asMap().entries
+    final spots = ble.heartRate.rrIntervals.asMap().entries
         .map((e) => FlSpot(e.key.toDouble(), e.value))
         .toList();
 
@@ -258,7 +258,7 @@ class _AFibPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final irregular = ble.isConnected && ble.irregularHeartbeat;
+    final irregular = ble.isConnected && ble.heartRate.afibProbability > 30;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(

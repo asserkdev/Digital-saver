@@ -97,7 +97,7 @@ class _BPHero extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: _catColor.withOpacity(0.5)),
             ),
-            child: Text(category!.name, style: TextStyle(color: _catColor == AppColors.dangerDark ? Colors.red.shade200 : Colors.white,
+            child: Text(category!, style: TextStyle(color: _catColor == AppColors.dangerDark ? Colors.red.shade200 : Colors.white,
               fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ],
@@ -131,7 +131,7 @@ class _BPMetrics extends StatelessWidget {
         Row(children: [
           Expanded(child: _Metric(label: 'Vascular Age', value: vasAge != null ? '$vasAge yrs' : '--', subtitle: 'vs your actual age', color: AppColors.heartRed)),
           const SizedBox(width: 12),
-          Expanded(child: _Metric(label: 'HRV Influence', value: ble.hrv > 0 ? '${ble.hrv.round()} ms' : '--', subtitle: 'Higher = better vascular tone', color: AppColors.success)),
+          Expanded(child: _Metric(label: 'HRV Influence', value: ble.heartRate.hrv > 0 ? '${ble.heartRate.hrv.round()} ms' : '--', subtitle: 'Higher = better vascular tone', color: AppColors.success)),
         ]),
       ]),
     );

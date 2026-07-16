@@ -12,7 +12,7 @@ class HeartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ble = context.watch<BleService>();
     final zone = ble.heartRate.bpm > 0 ? HealthAnalysisService.heartRateZone(ble.heartRate.bpm) : null;
-    final zone2 = ble.heartRate.bpm > 0 ? HealthAnalysisService.heartRateZone2(ble.heartRate.bpm) : null;
+    final zone2 = ble.heartRate.bpm > 0 ? HealthAnalysisService.getHeartRateZone2(ble.heartRate.bpm) : null;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -115,16 +115,16 @@ class _HRVPanel extends StatelessWidget {
         ]),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _HRVStat(label: 'RMSSD', value: ble.isConnected && ble.hrv > 0 ? '${ble.hrv.round()} ms' : '--',
+          Expanded(child: _HRVStat(label: 'RMSSD', value: ble.isConnected && ble.heartRate.hrv > 0 ? '${ble.heartRate.hrv} ms' : '--',
             subtitle: 'Parasympathetic tone', color: AppColors.primary)),
           const SizedBox(width: 12),
-          Expanded(child: _HRVStat(label: 'SDNN', value: ble.isConnected && ble.hrv > 0 ? '${(ble.hrv * 1.4).round()} ms' : '--',
+          Expanded(child: _HRVStat(label: 'SDNN', value: ble.isConnected && ble.heartRate.hrv > 0 ? '${(ble.heartRate.hrv * 1.4).round()} ms' : '--',
             subtitle: 'Overall variability', color: AppColors.success)),
           const SizedBox(width: 12),
-          Expanded(child: _HRVStat(label: 'pNN50', value: ble.isConnected && ble.hrv > 0 ? '${((ble.hrv - 15) / 0.85).clamp(0, 100).round()}%' : '--',
+          Expanded(child: _HRVStat(label: 'pNN50', value: ble.isConnected && ble.heartRate.hrv > 0 ? '${((ble.heartRate.hrv - 15) / 0.85).clamp(0, 100).round()}%' : '--',
             subtitle: '> 50ms intervals', color: AppColors.accent)),
         ]),
-        if (ble.isConnected && ble.hrv > 0) ...[
+        if (ble.isConnected && ble.heartRate.hrv > 0) ...[
           const SizedBox(height: 14),
           const Divider(height: 1),
           const SizedBox(height: 12),

@@ -236,8 +236,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await StorageService.saveProfile(updated);
     setState(() => _profile = updated);
   }
-}
-
 
   void _showAuthScreen(BuildContext context) {
     Navigator.of(context).push(
@@ -280,6 +278,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _load();
     }
   }
+}
+
 
 class _ProfileCard extends StatelessWidget {
   final UserProfile profile;

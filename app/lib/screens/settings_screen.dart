@@ -43,11 +43,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
     final ble = context.watch<BleService>();
     final auth = context.watch<AuthProvider>();
+    
+    // Show auth card immediately (auth loads fast from Supabase session)
+    // Only show full loading if both auth AND profile are loading
+    if (auth.loading && _loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFF),
       appBar: AppBar(
@@ -66,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onSignOut: () => _handleSignOut(context),
           ),
           const SizedBox(height: 16),
-          _ProfileCard(profile: _profile, onEdit: _editProfile),
+          if (!_loading) _ProfileCard(profile: _profile, onEdit: _editProfile),
           const SizedBox(height: 16),
           _DeviceCard(ble: ble),
           const SizedBox(height: 16),

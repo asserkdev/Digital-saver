@@ -58,6 +58,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _CambricAccountCard(
+            isAuthenticated: auth.isAuthenticated,
+            profile: auth.profile,
+            onSignIn: () => _showAuthScreen(context),
+            onSignOut: () => _handleSignOut(context),
+          ),
+          const SizedBox(height: 16),
           _ProfileCard(profile: _profile, onEdit: _editProfile),
           const SizedBox(height: 16),
           _DeviceCard(ble: ble),

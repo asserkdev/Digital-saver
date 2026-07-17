@@ -16,8 +16,8 @@ void main() async {
   
   // Initialize Supabase
   await Supabase.initialize(
-    url: 'https://cambric-systems.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhbWJyaWMiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MjU0NjcwMCwiZXhwIjoxOTU4MTIyNzAwfQ.xsldjFOFKiQLM5A7G8X9qM1VZ1V1R5e4tYvK9tT9t0c',
+    url: 'https://dafgzzkerytjuvxzymnq.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZmd6emtlcnl0anV2eHp5bW5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MTE1MDUsImV4cCI6MjA5OTI4NzUwNX0.bZdxqNuy1ZyHMGzBieq7BzUd6IUEhfHEZxL-YTka3DQ',
   );
   
   // Set system UI overlay style

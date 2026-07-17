@@ -28,12 +28,10 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _showConfirm = false;
 
   // Separate auth instance to avoid rebuilds from main provider
-  late final CambricAuth _auth;
 
   @override
   void initState() {
     super.initState();
-    _auth = CambricAuth();
   }
 
   @override
@@ -62,7 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
     });
 
     try {
-      await _auth.client.auth.signInWithPassword(email: email, password: password);
+      await CambricAuth.client.auth.signInWithPassword(email: email, password: password);
       if (mounted) {
         widget.onAuthSuccess?.call();
         Navigator.pop(context);
@@ -105,7 +103,7 @@ class _AuthScreenState extends State<AuthScreen> {
     });
 
     try {
-      final response = await _auth.client.auth.signUp(
+      final response = await CambricAuth.client.auth.signUp(
         email: email,
         password: password,
         data: {'display_name': name},
@@ -113,12 +111,12 @@ class _AuthScreenState extends State<AuthScreen> {
       
       if (response.user != null) {
         // Create profile in database
-        await _auth.client.from('digital_saver_user_profiles').insert({
+        await CambricAuth.client.from('digital_saver_user_profiles').insert({
           'id': response.user!.id,
           'email': email,
           'display_name': name,
         });
-        await _auth.client.from('digital_saver_storage_stats').insert({
+        await CambricAuth.client.from('digital_saver_storage_stats').insert({
           'user_id': response.user!.id,
         });
       }
@@ -407,7 +405,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: OutlinedButton.icon(
         onPressed: _isLoading ? null : () async {
           try {
-            await _auth.client.auth.signInWithOAuth(OAuthProvider.google, redirectTo: 'com.cambric.digitalsaver://callback');
+            await CambricAuth.client.auth.signInWithOAuth(OAuthProvider.google, redirectTo: 'com.cambric.digitalsaver://callback');
           } catch (e) {
             setState(() => _errorMessage = 'Google sign in failed');
           }
@@ -445,7 +443,7 @@ class _AuthScreenState extends State<AuthScreen> {
               final email = ctrl.text.trim();
               if (email.isEmpty) return;
               try {
-                await _auth.client.auth.resetPasswordForEmail(email, redirectTo: 'com.cambric.digitalsaver://reset-password');
+                await CambricAuth.client.auth.resetPasswordForEmail(email, redirectTo: 'com.cambric.digitalsaver://reset-password');
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(

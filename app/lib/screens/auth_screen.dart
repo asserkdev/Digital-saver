@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/cambric_auth_service.dart';
 
@@ -15,22 +14,27 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   int _tabIndex = 0;
-  
-  // Sign In fields
+
   final _signInEmail = TextEditingController();
   final _signInPassword = TextEditingController();
-  
-  // Sign Up fields
   final _signUpName = TextEditingController();
   final _signUpEmail = TextEditingController();
   final _signUpPassword = TextEditingController();
   final _signUpConfirm = TextEditingController();
 
-  // Local UI state only
   bool _isLoading = false;
   String? _errorMessage;
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
+  bool _showPassword = false;
+  bool _showConfirm = false;
+
+  // Separate auth instance to avoid rebuilds from main provider
+  late final CambricAuth _auth;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth = CambricAuth();
+  }
 
   @override
   void dispose() {
@@ -43,43 +47,33 @@ class _AuthScreenState extends State<AuthScreen> {
     super.dispose();
   }
 
-  void _setLoading(bool v) {
-    if (_isLoading != v) {
-      setState(() => _isLoading = v);
-    }
-  }
-
-  void _setError(String? msg) {
-    setState(() => _errorMessage = msg);
-  }
-
   Future<void> _doSignIn() async {
     final email = _signInEmail.text.trim();
     final password = _signInPassword.text;
 
     if (email.isEmpty || password.isEmpty) {
-      _setError('Please enter email and password');
+      setState(() => _errorMessage = 'Please enter email and password');
       return;
     }
 
-    _setLoading(true);
-    _setError(null);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
-      final auth = context.read<AuthProvider>();
-      final ok = await auth.signInWithEmail(email, password);
-      
-      if (ok && mounted) {
+      await _auth.client.auth.signInWithPassword(email: email, password: password);
+      if (mounted) {
         widget.onAuthSuccess?.call();
         Navigator.pop(context);
-      } else if (auth.error != null) {
-        _setError(auth.error);
       }
     } catch (e) {
-      _setError('Sign in failed. Please try again.');
+      setState(() => _errorMessage = _mapError(e.toString()));
     }
 
-    _setLoading(false);
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _doSignUp() async {
@@ -89,57 +83,73 @@ class _AuthScreenState extends State<AuthScreen> {
     final confirm = _signUpConfirm.text;
 
     if (name.isEmpty) {
-      _setError('Please enter your name');
+      setState(() => _errorMessage = 'Please enter your name');
       return;
     }
     if (email.isEmpty || !email.contains('@')) {
-      _setError('Please enter a valid email');
+      setState(() => _errorMessage = 'Please enter a valid email');
       return;
     }
     if (password.length < 6) {
-      _setError('Password must be at least 6 characters');
+      setState(() => _errorMessage = 'Password must be at least 6 characters');
       return;
     }
     if (password != confirm) {
-      _setError('Passwords do not match');
+      setState(() => _errorMessage = 'Passwords do not match');
       return;
     }
 
-    _setLoading(true);
-    _setError(null);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
-      final auth = context.read<AuthProvider>();
-      final ok = await auth.signUpWithEmail(email, password, displayName: name);
+      final response = await _auth.client.auth.signUp(
+        email: email,
+        password: password,
+        data: {'display_name': name},
+      );
       
-      if (ok && mounted) {
+      if (response.user != null) {
+        // Create profile in database
+        await _auth.client.from('digital_saver_user_profiles').insert({
+          'id': response.user!.id,
+          'email': email,
+          'display_name': name,
+        });
+        await _auth.client.from('digital_saver_storage_stats').insert({
+          'user_id': response.user!.id,
+        });
+      }
+
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Account created! Check email to confirm.'), backgroundColor: Color(0xFF22C55E)),
         );
         widget.onAuthSuccess?.call();
         Navigator.pop(context);
-      } else if (auth.error != null) {
-        _setError(auth.error);
       }
     } catch (e) {
-      _setError('Sign up failed. Please try again.');
+      setState(() => _errorMessage = _mapError(e.toString()));
     }
 
-    _setLoading(false);
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
   }
 
-  Future<void> _doGoogleSignIn() async {
-    _setLoading(true);
-    _setError(null);
-
-    try {
-      final auth = context.read<AuthProvider>();
-      await auth.signInWithGoogle();
-      // OAuth handles redirect
-    } catch (e) {
-      _setError('Google sign in failed');
-      _setLoading(false);
+  String _mapError(String error) {
+    if (error.contains('Invalid login credentials')) {
+      return 'Invalid email or password';
+    } else if (error.contains('Email not confirmed')) {
+      return 'Please verify your email address';
+    } else if (error.contains('User already registered')) {
+      return 'An account with this email already exists';
+    } else if (error.contains('Password should be at least')) {
+      return 'Password must be at least 6 characters';
     }
+    return 'An error occurred. Please try again.';
   }
 
   @override
@@ -209,7 +219,7 @@ class _AuthScreenState extends State<AuthScreen> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
-              child: _tabIndex == 0 ? _buildSignInFields() : _buildSignUpFields(),
+              child: _tabIndex == 0 ? _buildSignInForm() : _buildSignUpForm(),
             ),
           ),
         ],
@@ -237,12 +247,10 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget _tabItem(String label, int index) {
     final isActive = _tabIndex == index;
     return GestureDetector(
-      onTap: () {
-        if (!_isLoading) {
-          setState(() => _tabIndex = index);
-          _setError(null);
-        }
-      },
+      onTap: _isLoading ? null : () => setState(() {
+        _tabIndex = index;
+        _errorMessage = null;
+      }),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -252,14 +260,15 @@ class _AuthScreenState extends State<AuthScreen> {
           boxShadow: isActive ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)] : null,
         ),
         child: Text(label, textAlign: TextAlign.center, style: GoogleFonts.inter(
-          fontSize: 15, fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+          fontSize: 15,
+          fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
           color: isActive ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
         )),
       ),
     );
   }
 
-  Widget _buildSignInFields() {
+  Widget _buildSignInForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -267,11 +276,11 @@ class _AuthScreenState extends State<AuthScreen> {
         const SizedBox(height: 8),
         Text('Sign in to your Cambric account', style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF64748B))),
         const SizedBox(height: 32),
-        _textField(_signInEmail, 'Email', Icons.email_outlined, keyboardType: TextInputType.emailAddress),
+        _buildTextField(_signInEmail, 'Email', Icons.email_outlined, TextInputType.emailAddress),
         const SizedBox(height: 20),
-        _textField(_signInPassword, 'Password', Icons.lock_outlined, obscure: _obscurePassword, suffix: IconButton(
-          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF94A3B8)),
-          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+        _buildTextField(_signInPassword, 'Password', Icons.lock_outlined, TextInputType.visiblePassword, obscure: !_showPassword, suffix: IconButton(
+          icon: Icon(_showPassword ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF94A3B8)),
+          onPressed: () => setState(() => _showPassword = !_showPassword),
         )),
         const SizedBox(height: 12),
         Align(
@@ -283,7 +292,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         if (_errorMessage != null) ...[const SizedBox(height: 16), _errorBox(_errorMessage!)],
         const SizedBox(height: 24),
-        _primaryButton('Sign In', _isLoading, _doSignIn),
+        _primaryButton('Sign In', _doSignIn),
         const SizedBox(height: 28),
         _divider(),
         const SizedBox(height: 24),
@@ -292,7 +301,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildSignUpFields() {
+  Widget _buildSignUpForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -300,18 +309,18 @@ class _AuthScreenState extends State<AuthScreen> {
         const SizedBox(height: 8),
         Text('Join Cambric health ecosystem', style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF64748B))),
         const SizedBox(height: 32),
-        _textField(_signUpName, 'Full Name', Icons.person_outlined),
+        _buildTextField(_signUpName, 'Full Name', Icons.person_outlined, TextInputType.name),
         const SizedBox(height: 20),
-        _textField(_signUpEmail, 'Email', Icons.email_outlined, keyboardType: TextInputType.emailAddress),
+        _buildTextField(_signUpEmail, 'Email', Icons.email_outlined, TextInputType.emailAddress),
         const SizedBox(height: 20),
-        _textField(_signUpPassword, 'Password', Icons.lock_outlined, obscure: _obscurePassword, suffix: IconButton(
-          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF94A3B8)),
-          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+        _buildTextField(_signUpPassword, 'Password', Icons.lock_outlined, TextInputType.visiblePassword, obscure: !_showPassword, suffix: IconButton(
+          icon: Icon(_showPassword ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF94A3B8)),
+          onPressed: () => setState(() => _showPassword = !_showPassword),
         )),
         const SizedBox(height: 20),
-        _textField(_signUpConfirm, 'Confirm Password', Icons.lock_outlined, obscure: _obscureConfirm, suffix: IconButton(
-          icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF94A3B8)),
-          onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+        _buildTextField(_signUpConfirm, 'Confirm Password', Icons.lock_outlined, TextInputType.visiblePassword, obscure: !_showConfirm, suffix: IconButton(
+          icon: Icon(_showConfirm ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF94A3B8)),
+          onPressed: () => setState(() => _showConfirm = !_showConfirm),
         )),
         const SizedBox(height: 16),
         if (_errorMessage != null) ...[_errorBox(_errorMessage!), const SizedBox(height: 16)],
@@ -319,7 +328,7 @@ class _AuthScreenState extends State<AuthScreen> {
           padding: const EdgeInsets.only(bottom: 16),
           child: Text("By signing up, you agree to Cambric's Terms and Privacy Policy", style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)), textAlign: TextAlign.center),
         ),
-        _primaryButton('Create Account', _isLoading, _doSignUp),
+        _primaryButton('Create Account', _doSignUp),
         const SizedBox(height: 28),
         _divider(),
         const SizedBox(height: 24),
@@ -328,12 +337,9 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _textField(TextEditingController ctrl, String label, IconData icon, {
-    bool obscure = false,
-    TextInputType? keyboardType,
-    Widget? suffix,
-  }) {
+  Widget _buildTextField(TextEditingController ctrl, String label, IconData icon, TextInputType keyboardType, {bool obscure = false, Widget? suffix}) {
     return TextField(
+      key: ValueKey(ctrl.hashCode),
       controller: ctrl,
       obscureText: obscure,
       keyboardType: keyboardType,
@@ -367,18 +373,18 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _primaryButton(String label, bool loading, VoidCallback onPressed) {
+  Widget _primaryButton(String label, VoidCallback onPressed) {
     return SizedBox(
       height: 56,
       child: ElevatedButton(
-        onPressed: loading ? null : onPressed,
+        onPressed: _isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2563EB),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
-        child: loading
+        child: _isLoading
             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)))
             : Text(label, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
       ),
@@ -399,7 +405,13 @@ class _AuthScreenState extends State<AuthScreen> {
     return SizedBox(
       height: 56,
       child: OutlinedButton.icon(
-        onPressed: _isLoading ? null : _doGoogleSignIn,
+        onPressed: _isLoading ? null : () async {
+          try {
+            await _auth.client.auth.signInWithOAuth(OAuthProvider.google, redirectTo: 'com.cambric.digitalsaver://callback');
+          } catch (e) {
+            setState(() => _errorMessage = 'Google sign in failed');
+          }
+        },
         icon: const Icon(Icons.g_mobiledata, size: 28, color: Color(0xFFDB4437)),
         label: Text(label, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w500)),
         style: OutlinedButton.styleFrom(
@@ -432,12 +444,20 @@ class _AuthScreenState extends State<AuthScreen> {
             onPressed: () async {
               final email = ctrl.text.trim();
               if (email.isEmpty) return;
-              await context.read<AuthProvider>().resetPassword(email);
-              if (ctx.mounted) {
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Password reset email sent!'), backgroundColor: Color(0xFF22C55E)),
-                );
+              try {
+                await _auth.client.auth.resetPasswordForEmail(email, redirectTo: 'com.cambric.digitalsaver://reset-password');
+                if (ctx.mounted) {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password reset email sent!'), backgroundColor: Color(0xFF22C55E)),
+                  );
+                }
+              } catch (e) {
+                if (ctx.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to send reset email'), backgroundColor: Color(0xFFDC2626)),
+                  );
+                }
               }
             },
             child: const Text('Send'),

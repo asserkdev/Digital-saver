@@ -63,17 +63,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Selector<AuthProvider, bool>(
-            selector: (_, a) => a.isAuthenticated,
-            builder: (_, isAuth, __) => Selector<AuthProvider, CambricUserProfile?>(
-              selector: (_, a) => a.profile,
-              builder: (_, profile, __) => _CambricAccountCard(
-                isAuthenticated: isAuth,
-                profile: profile,
-                onSignIn: () => _showAuthScreen(context),
-                onSignOut: () => _handleSignOut(context),
-              ),
-            ),
+          _CambricAccountCard(
+            isAuthenticated: auth.isAuthenticated,
+            profile: auth.profile,
+            onSignIn: () => _showAuthScreen(context),
+            onSignOut: () => _handleSignOut(context),
           ),
           const SizedBox(height: 16),
           if (!_loading) _ProfileCard(profile: _profile, onEdit: _editProfile),
@@ -261,8 +255,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (ctx) => AuthScreen(
           onAuthSuccess: () {
             Navigator.of(ctx).pop();
-            // Trigger auth provider to update
-            context.read<AuthProvider>();
             _load();
           },
         ),

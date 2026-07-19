@@ -18,11 +18,6 @@ class _AuthScreenState extends State<AuthScreen> {
   final _nameController = TextEditingController();
   final _confirmController = TextEditingController();
 
-  final _emailFocus = FocusNode();
-  final _passwordFocus = FocusNode();
-  final _nameFocus = FocusNode();
-  final _confirmFocus = FocusNode();
-
   bool _isLoading = false;
   String _errorMessage = '';
   bool _showPassword = true;
@@ -43,17 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _passwordController.dispose();
     _nameController.dispose();
     _confirmController.dispose();
-    _emailFocus.dispose();
-    _passwordFocus.dispose();
-    _nameFocus.dispose();
-    _confirmFocus.dispose();
     super.dispose();
-  }
-
-  void _requestFocus(FocusNode node) {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) node.requestFocus();
-    });
   }
 
   Future<void> _handleSignIn() async {
@@ -85,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
     } on AuthException catch (e) {
       if (mounted) setState(() => _errorMessage = _mapError(e.message));
     } catch (e) {
-      if (mounted) setState(() => _errorMessage = 'Connection error. Please try again.');
+      if (mounted) setState(() => _errorMessage = 'Connection error. Check your internet.');
     }
 
     if (mounted) setState(() => _isLoading = false);
@@ -101,22 +86,18 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (name.isEmpty) {
       setState(() => _errorMessage = 'Please enter your name');
-      _requestFocus(_nameFocus);
       return;
     }
     if (email.isEmpty || !email.contains('@')) {
       setState(() => _errorMessage = 'Please enter a valid email');
-      _requestFocus(_emailFocus);
       return;
     }
     if (password.length < 6) {
       setState(() => _errorMessage = 'Password must be at least 6 characters');
-      _requestFocus(_passwordFocus);
       return;
     }
     if (password != confirm) {
       setState(() => _errorMessage = 'Passwords do not match');
-      _requestFocus(_confirmFocus);
       return;
     }
 
@@ -158,7 +139,7 @@ class _AuthScreenState extends State<AuthScreen> {
     } on AuthException catch (e) {
       if (mounted) setState(() => _errorMessage = _mapError(e.message));
     } catch (e) {
-      if (mounted) setState(() => _errorMessage = 'Connection error. Please try again.');
+      if (mounted) setState(() => _errorMessage = 'Connection error. Check your internet.');
     }
 
     if (mounted) setState(() => _isLoading = false);
@@ -169,6 +150,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (message.contains('Email not confirmed')) return 'Please check your email to confirm';
     if (message.contains('User already registered')) return 'This email is already registered';
     if (message.contains('Password should be at least')) return 'Password must be at least 6 characters';
+    if (message.contains('weak')) return 'Password is too weak';
     return message;
   }
 
@@ -178,18 +160,13 @@ class _AuthScreenState extends State<AuthScreen> {
       _tabIndex = index;
       _errorMessage = '';
     });
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (!mounted) return;
-      if (index == 0) {
-        _emailFocus.requestFocus();
-      } else {
-        _nameFocus.requestFocus();
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final maxCardHeight = screenHeight - 160;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -201,108 +178,82 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              _buildLogo(),
-              const SizedBox(height: 30),
-              _buildTitle(),
-              const SizedBox(height: 50),
-              Expanded(child: _buildCard()),
-              const SizedBox(height: 40),
-            ],
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: 200,
+                  maxHeight: maxCardHeight,
+                ),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10)),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildHeader(),
+                      Flexible(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(24),
+                          child: _tabIndex == 0 ? _buildSignIn() : _buildSignUp(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLogo() {
-    return Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 10)),
-        ],
-      ),
-      child: const Icon(Icons.favorite, color: Color(0xFF2563EB), size: 50),
-    );
-  }
-
-  Widget _buildTitle() {
+  Widget _buildHeader() {
     return Column(
       children: [
-        Text(
-          'CAMBRIC',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.white.withOpacity(0.6),
-            letterSpacing: 4,
+        const SizedBox(height: 20),
+        Container(
+          width: 70,
+          height: 70,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2563EB),
+            borderRadius: BorderRadius.circular(18),
           ),
+          child: const Icon(Icons.favorite, color: Colors.white, size: 36),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         const Text(
           'Digital Saver',
           style: TextStyle(
-            fontSize: 32,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Color(0xFF1E3A5F),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Health Monitoring System',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white.withOpacity(0.7),
+        const SizedBox(height: 16),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Expanded(child: _tabButton('Sign In', 0)),
+              Expanded(child: _tabButton('Sign Up', 1)),
+            ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildCard() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 30, offset: const Offset(0, -5)),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildTabBar(),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: _tabIndex == 0 ? _buildSignIn() : _buildSignUp(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Expanded(child: _tabButton('Sign In', 0)),
-          Expanded(child: _tabButton('Sign Up', 1)),
-        ],
-      ),
     );
   }
 
@@ -311,7 +262,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return GestureDetector(
       onTap: () => _switchTab(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
@@ -321,7 +272,7 @@ class _AuthScreenState extends State<AuthScreen> {
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
           ),
@@ -336,25 +287,24 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         const Text(
           'Welcome back',
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         const Text(
           'Sign in to continue',
-          style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+          style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
         ),
-        const SizedBox(height: 32),
-        _inputField(_emailController, _emailFocus, 'Email', Icons.email_outlined, TextInputType.emailAddress),
         const SizedBox(height: 20),
-        _passwordField(_passwordController, _passwordFocus, 'Password'),
-        const SizedBox(height: 16),
-        if (_errorMessage.isNotEmpty && _tabIndex == 0) _errorBox(),
-        const SizedBox(height: 24),
-        _submitButton('Sign In', _handleSignIn),
-        const SizedBox(height: 28),
-        _divider(),
-        const SizedBox(height: 24),
-        _googleButton(),
+        _buildTextField(_emailController, 'Email', Icons.email_outlined, TextInputType.emailAddress),
+        const SizedBox(height: 14),
+        _buildPasswordField(),
+        const SizedBox(height: 14),
+        if (_errorMessage.isNotEmpty && _tabIndex == 0) ...[
+          _buildErrorBox(_errorMessage),
+          const SizedBox(height: 14),
+        ],
+        const SizedBox(height: 8),
+        _buildSubmitButton('Sign In', _handleSignIn),
       ],
     );
   }
@@ -364,44 +314,41 @@ class _AuthScreenState extends State<AuthScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Create account',
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
+          'Create Account',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         const Text(
           'Join Cambric ecosystem',
-          style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+          style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
         ),
-        const SizedBox(height: 32),
-        _inputField(_nameController, _nameFocus, 'Full Name', Icons.person_outlined, TextInputType.name),
         const SizedBox(height: 20),
-        _inputField(_emailController, _emailFocus, 'Email', Icons.email_outlined, TextInputType.emailAddress),
-        const SizedBox(height: 20),
-        _passwordField(_passwordController, _passwordFocus, 'Password'),
-        const SizedBox(height: 20),
-        _inputField(_confirmController, _confirmFocus, 'Confirm Password', Icons.lock_outlined, TextInputType.visiblePassword, obscure: !_showConfirm, toggleObscure: () => setState(() => _showConfirm = !_showConfirm)),
-        const SizedBox(height: 16),
-        if (_errorMessage.isNotEmpty && _tabIndex == 1) _errorBox(),
-        const SizedBox(height: 16),
+        _buildTextField(_nameController, 'Full Name', Icons.person_outlined, TextInputType.name),
+        const SizedBox(height: 14),
+        _buildTextField(_emailController, 'Email', Icons.email_outlined, TextInputType.emailAddress),
+        const SizedBox(height: 14),
+        _buildPasswordField(),
+        const SizedBox(height: 14),
+        _buildTextField(_confirmController, 'Confirm Password', Icons.lock_outlined, TextInputType.visiblePassword, obscure: !_showConfirm, toggleVisibility: () => setState(() => _showConfirm = !_showConfirm)),
+        const SizedBox(height: 14),
+        if (_errorMessage.isNotEmpty && _tabIndex == 1) ...[
+          _buildErrorBox(_errorMessage),
+          const SizedBox(height: 14),
+        ],
         const Text(
-          'By continuing, you agree to our Terms & Privacy Policy',
-          style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+          'By continuing, you agree to Terms & Privacy Policy',
+          style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 16),
-        _submitButton('Create Account', _handleSignUp),
-        const SizedBox(height: 28),
-        _divider(),
-        const SizedBox(height: 24),
-        _googleButton(),
+        const SizedBox(height: 14),
+        _buildSubmitButton('Create Account', _handleSignUp),
       ],
     );
   }
 
-  Widget _inputField(TextEditingController controller, FocusNode focusNode, String label, IconData icon, TextInputType keyboardType, {bool obscure = false, VoidCallback? toggleObscure}) {
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon, TextInputType keyboardType, {bool obscure = false, VoidCallback? toggleVisibility}) {
     return TextField(
       controller: controller,
-      focusNode: focusNode,
       obscureText: obscure,
       keyboardType: keyboardType,
       style: const TextStyle(fontSize: 15, color: Color(0xFF1E3A5F)),
@@ -409,15 +356,15 @@ class _AuthScreenState extends State<AuthScreen> {
         labelText: label,
         labelStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
         prefixIcon: Icon(icon, color: const Color(0xFF2563EB), size: 20),
-        suffixIcon: toggleObscure != null
+        suffixIcon: toggleVisibility != null
             ? IconButton(
                 icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF94A3B8)),
-                onPressed: toggleObscure,
+                onPressed: toggleVisibility,
               )
             : null,
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF2563EB), width: 2)),
@@ -425,14 +372,13 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _passwordField(TextEditingController controller, FocusNode focusNode, String label) {
+  Widget _buildPasswordField() {
     return TextField(
-      controller: controller,
-      focusNode: focusNode,
+      controller: _passwordController,
       obscureText: !_showPassword,
       style: const TextStyle(fontSize: 15, color: Color(0xFF1E3A5F)),
       decoration: InputDecoration(
-        labelText: label,
+        labelText: 'Password',
         labelStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
         prefixIcon: const Icon(Icons.lock_outlined, color: Color(0xFF2563EB), size: 20),
         suffixIcon: IconButton(
@@ -441,7 +387,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF2563EB), width: 2)),
@@ -449,21 +395,21 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _errorBox() {
+  Widget _buildErrorBox(String message) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFFEE2E2),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: Color(0xFFDC2626), size: 22),
-          const SizedBox(width: 10),
+          const Icon(Icons.error_outline, color: Color(0xFFDC2626), size: 20),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
-              _errorMessage,
-              style: const TextStyle(color: Color(0xFFDC2626), fontSize: 14),
+              message,
+              style: const TextStyle(color: Color(0xFFDC2626), fontSize: 13),
             ),
           ),
         ],
@@ -471,15 +417,15 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _submitButton(String label, VoidCallback onPressed) {
+  Widget _buildSubmitButton(String label, VoidCallback onPressed) {
     return SizedBox(
-      height: 56,
+      height: 50,
       child: ElevatedButton(
         onPressed: _isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2563EB),
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 0,
         ),
         child: _isLoading
@@ -488,42 +434,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 height: 24,
                 child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
               )
-            : Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-      ),
-    );
-  }
-
-  Widget _divider() {
-    return Row(
-      children: [
-        const Expanded(child: Divider()),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text('or', style: TextStyle(color: const Color(0xFF94A3B8), fontSize: 13)),
-        ),
-        const Expanded(child: Divider()),
-      ],
-    );
-  }
-
-  Widget _googleButton() {
-    return SizedBox(
-      height: 56,
-      child: OutlinedButton.icon(
-        onPressed: _isLoading ? null : () async {
-          try {
-            await Supabase.instance.client.auth.signInWithOAuth(OAuthProvider.google);
-          } catch (e) {
-            if (mounted) setState(() => _errorMessage = 'Google sign in failed');
-          }
-        },
-        icon: const Icon(Icons.g_mobiledata, size: 28, color: Color(0xFFDB4437)),
-        label: Text(_tabIndex == 0 ? 'Sign in with Google' : 'Sign up with Google', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFFDB4437),
-          side: BorderSide(color: const Color(0xFFDB4437).withOpacity(0.3)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        ),
+            : Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
       ),
     );
   }

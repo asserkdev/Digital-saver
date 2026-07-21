@@ -156,7 +156,7 @@ class AuthProvider extends ChangeNotifier {
           _user = session!.user;
           _profile = CambricUserProfile.fromUser(_user!);
           _sessionRestored = true;
-          await _loadFullProfile();
+          _loadFullProfile(); // fire and forget
         }
         _loading = false;
         _initialCheckDone = true;
@@ -169,7 +169,7 @@ class AuthProvider extends ChangeNotifier {
           _user = session!.user;
           _profile = CambricUserProfile.fromUser(_user!);
           _sessionRestored = true;
-          await _loadFullProfile();
+          _loadFullProfile(); // fire and forget
         }
         _loading = false;
         _initialCheckDone = true;
@@ -199,7 +199,7 @@ class AuthProvider extends ChangeNotifier {
         if (session?.user != null) {
           _user = session!.user;
           _profile = CambricUserProfile.fromUser(_user!);
-          await _loadFullProfile();
+          _loadFullProfile(); // fire and forget
         }
         _loading = false;
         notifyListeners();
@@ -218,7 +218,8 @@ class AuthProvider extends ChangeNotifier {
           .from('digital_saver_user_profiles')
           .select()
           .eq('id', _user!.id)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(const Duration(seconds: 5));
 
       if (result != null) {
         _profile = CambricUserProfile.fromProfile(result);
@@ -296,7 +297,7 @@ class AuthProvider extends ChangeNotifier {
       if (response.user != null) {
         _user = response.user;
         _profile = CambricUserProfile.fromUser(_user!);
-        await _loadFullProfile();
+        _loadFullProfile(); // fire and forget
         _loading = false;
         _initialCheckDone = true; // Mark as done after sign in
         notifyListeners();

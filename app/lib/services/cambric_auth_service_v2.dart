@@ -90,10 +90,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _init() async {
-    // Check for existing session immediately (important for web)
-    _checkExistingSession();
-
-    // Listen for auth state changes
+    // FIRST: Set up stream listener BEFORE anything else
+    // This ensures we catch initialSession even if it fires immediately
     _authSubscription = _client.auth.onAuthStateChange.listen(
       _handleAuthChange,
       onError: (error) {
@@ -102,9 +100,13 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+
+    // THEN: Check for existing session synchronously
+    // This is a fallback for sessions already in memory
+    _checkExistingSessionSync();
   }
 
-  void _checkExistingSession() {
+  void _checkExistingSessionSync() {
     if (_sessionRestored) return;
     
     try {

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'services/ble_service.dart';
 import 'services/cambric_auth_service_v2.dart';
+import 'screens/auth_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/heart_screen.dart';
 import 'screens/bp_screen.dart';
@@ -92,6 +93,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
     _controller.forward();
 
+    // Show disclaimer after a short delay
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
         setState(() {
@@ -108,20 +110,29 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   void _acceptAndContinue() {
+    final auth = context.read<AuthProvider>();
     setState(() {
       _accepted = true;
     });
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const MainNav()),
-        );
+        // Navigate based on auth status
+        if (auth.isAuthenticated) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const MainNav()),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const AuthScreen()),
+          );
+        }
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Watch auth - this triggers session restoration
     final auth = context.watch<AuthProvider>();
     
     return Scaffold(
@@ -193,11 +204,28 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ),
                   ),
                   const SizedBox(height: 16),
-                  if (auth.isAuthenticated)
+                  // Session status indicator
+                  if (auth.loading)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.3),
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                          SizedBox(width: 8),
+                          Text('Restoring session...', style: TextStyle(color: Colors.white, fontSize: 12)),
+                        ],
+                      ),
+                    )
+                  else if (auth.isAuthenticated)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.4),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Row(
@@ -205,7 +233,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         children: [
                           Icon(Icons.check_circle, color: Colors.white, size: 16),
                           SizedBox(width: 6),
-                          Text('Session restored', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          Text('Signed in', style: TextStyle(color: Colors.white, fontSize: 12)),
                         ],
                       ),
                     ),
@@ -322,8 +350,37 @@ class _MainNavState extends State<MainNav> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Check auth status after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuth();
+    });
+  }
+
+  void _checkAuth() {
+    final auth = context.read<AuthProvider>();
+    if (!auth.isAuthenticated && !auth.loading) {
+      // Not authenticated, redirect to auth screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const AuthScreen()),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ble = context.watch<BleService>();
+    final auth = context.watch<AuthProvider>();
+
+    // Redirect if not authenticated
+    if (!auth.isAuthenticated && !auth.loading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       body: Stack(

@@ -114,7 +114,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     setState(() {
       _accepted = true;
     });
-    Future.delayed(const Duration(milliseconds: 300), () {
+    
+    // Wait for auth to finish loading before navigating
+    Future.delayed(const Duration(milliseconds: 300), () async {
+      // If still loading, wait for it
+      if (auth.loading) {
+        await Future.doWhile(() async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return context.mounted && auth.loading;
+        });
+      }
+      
       if (mounted) {
         // Navigate based on auth status
         if (auth.isAuthenticated) {

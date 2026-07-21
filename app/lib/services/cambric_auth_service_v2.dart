@@ -356,6 +356,7 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       final updates = <String, dynamic>{
+        'id': _user!.id,  // Required for upsert
         'updated_at': DateTime.now().toIso8601String(),
       };
 

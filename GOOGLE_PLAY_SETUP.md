@@ -156,7 +156,7 @@ You MUST have a privacy policy. Options:
 ### Option B: Create GitHub Pages Privacy Policy
 1. Create `privacy_policy.html` in your repo
 2. Enable GitHub Pages
-3. Use that URL: `https://asserkdev.github.io/Digital-saver/privacy_policy.html`
+3. Use that URL: `https://cambric-software.github.io/Digital-saver/privacy_policy.html`
 
 ### Privacy Policy Template
 

@@ -52,7 +52,7 @@ Build your own smartwatch with ~1,100 EGP:
 - 1.3" OLED display
 - 500mAh battery
 
-See the full project at: https://github.com/asserkdev/Digital-saver
+See the full project at: https://github.com/Cambric-software/Digital-saver
 
 ---
 

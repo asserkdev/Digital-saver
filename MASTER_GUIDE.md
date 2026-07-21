@@ -846,7 +846,7 @@ flutter build apk --release
 
 ### Privacy Policy Template
 
-Host this HTML at `https://asserkdev.github.io/Digital-saver/privacy_policy.html`:
+Host this HTML at `https://cambric-software.github.io/Digital-saver/privacy_policy.html`:
 
 ```html
 <!DOCTYPE html><html><body>

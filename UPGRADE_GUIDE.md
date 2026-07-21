@@ -867,7 +867,7 @@ DECEMBER 2026 ──────────────────────
 
 **Cambric Engineering Team**
 - Technical Documentation: docs.cambric.example.com
-- Firmware Updates: github.com/cambric-software/onyx-firmware
+- Firmware Updates: https://github.com/Cambric-software/onyx-firmware
 - App Source: Private repository (contact for access)
 - Support Email: engineering@cambric.example.com
 

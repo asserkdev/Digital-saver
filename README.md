@@ -643,10 +643,10 @@ The above copyright notice and this permission notice shall be included in all c
 
 ## 🔗 Important Links
 
-- **Live App Demo:** https://asserkdev.github.io/Digital-saver/
-- **Source Code Repository:** https://github.com/asserkdev/Digital-saver/
-- **Release Downloads:** https://github.com/asserkdev/Digital-saver/releases
-- **Bug Reports:** https://github.com/asserkdev/Digital-saver/issues
+- **Live App Demo:** https://cambric-software.github.io/Digital-saver/
+- **Source Code Repository:** https://github.com/Cambric-software/Digital-saver/
+- **Release Downloads:** https://github.com/Cambric-software/Digital-saver/releases
+- **Bug Reports:** https://github.com/Cambric-software/Digital-saver/issues
 
 ---
 

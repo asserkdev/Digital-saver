@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/ble_service.dart';
 import '../services/emergency_service.dart';
 import '../services/storage_service.dart';
@@ -32,26 +33,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _load() async {
     final auth = context.read<AuthProvider>();
-    
+
     // Try to load from Supabase if authenticated
-    if (auth.profile != null) {
-      // Use auth profile data as base
-      final p = UserProfile(
-        name: auth.profile!.displayName ?? '',
-        age: 30,
-        weightKg: 70,
-        heightCm: 170,
-        gender: 'Male',
-        language: 'en',
-      );
-      final c = await StorageService.loadContacts();
-      setState(() {
-        _profile = p;
-        _contacts = c;
-        _loading = false;
-      });
+    if (auth.isAuthenticated && auth.user != null) {
+      try {
+        // Load from Supabase database
+        final result = await Supabase.instance.client
+            .from('digital_saver_user_profiles')
+            .select()
+            .eq('id', auth.user!.id)
+            .maybeSingle();
+
+        UserProfile p;
+        if (result != null) {
+          // Use data from Supabase
+          p = UserProfile(
+            name: result['display_name'] ?? auth.profile?.displayName ?? '',
+            age: result['age'] ?? 30,
+            weightKg: (result['weight_kg'] ?? 70).toDouble(),
+            heightCm: (result['height_cm'] ?? 170).toDouble(),
+            gender: result['gender'] ?? 'Male',
+            language: 'en',
+          );
+        } else {
+          // No profile in DB, use auth profile
+          p = UserProfile(
+            name: auth.profile?.displayName ?? '',
+            age: 30,
+            weightKg: 70,
+            heightCm: 170,
+            gender: 'Male',
+            language: 'en',
+          );
+        }
+
+        // Also load contacts
+        final c = await StorageService.loadContacts();
+
+        setState(() {
+          _profile = p;
+          _contacts = c;
+          _loading = false;
+        });
+      } catch (e) {
+        // Fallback to local storage on error
+        final p = await _profileService.loadProfile(auth.user?.id);
+        final c = await StorageService.loadContacts();
+        setState(() {
+          _profile = p;
+          _contacts = c;
+          _loading = false;
+        });
+      }
     } else {
-      // Load from local storage only
+      // Load from local storage only (not authenticated)
       final p = await _profileService.loadProfile(null);
       final c = await StorageService.loadContacts();
       setState(() {

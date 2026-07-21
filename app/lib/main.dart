@@ -119,6 +119,20 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   void _acceptAndContinue() {
+    // Skip auth entirely, go directly to sign in
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => AuthScreen(
+        onSignedIn: () {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const MainNav()),
+          );
+        },
+      )),
+    );
+    return;
+  }
+
+  void _OLD_acceptAndContinue() {
     final auth = context.read<AuthProvider>();
     setState(() {
       _accepted = true;

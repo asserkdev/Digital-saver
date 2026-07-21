@@ -11,16 +11,17 @@
 
 1. [Overview](#overview)
 2. [Hardware Components](#hardware-components)
-3. [Bill of Materials (BOM)](#bill-of-materials-bom)
-4. [PCB Design](#pcb-design)
-5. [Firmware Setup](#firmware-setup)
-6. [Sensor Integration](#sensor-integration)
-7. [Assembly Guide](#assembly-guide)
-8. [Testing & Calibration](#testing--calibration)
-9. [外壳设计 (Case Design)](#外壳设计-case-design)
-10. [Production Guide](#production-guide)
-11. [Troubleshooting](#troubleshooting)
-12. [Safety Guidelines](#safety-guidelines)
+3. [Tools & Equipment Guide](#tools--equipment-guide)
+4. [Bill of Materials (BOM)](#bill-of-materials-bom)
+5. [PCB Design](#pcb-design)
+6. [Firmware Setup](#firmware-setup)
+7. [Sensor Integration](#sensor-integration)
+8. [Assembly Guide](#assembly-guide)
+9. [Testing & Calibration](#testing--calibration)
+10. [外壳设计 (Case Design)](#外壳设计-case-design)
+11. [Production Guide](#production-guide)
+12. [Troubleshooting](#troubleshooting)
+13. [Safety Guidelines](#safety-guidelines)
 
 ---
 
@@ -68,6 +69,106 @@ The **Onyx Smartwatch** is a medical-grade health monitoring wearable developed 
 | Enclosure | 3D Printed | 1 | - |
 
 ### Total Cost: ~**592 EGP** per unit
+
+---
+
+## 🔧 Tools & Equipment Guide
+
+### Essential Tools (Cannot Build Without)
+
+| Item | Specifications | Price (EGP) | Where to Buy |
+|------|---------------|--------------|--------------|
+| **Soldering Iron Kit** | 60W, adjustable 200-450°C | 350-500 | RoboDyn Egypt |
+| **Solder Wire** | 60/40 leaded, 0.8mm, 100g | 80 | RoboDyn Egypt |
+| **Soldering Flux** | Rosin flux pen | 50 | RoboDyn Egypt |
+| **Digital Multimeter** | DC/AC, continuity tester | 200-400 | RoboDyn Egypt |
+| **USB-C Cable** | For ESP32 upload | 50-100 | Any shop |
+| **Precision Screwdriver Set** | 4-6 pieces, PH0, PH1 | 80-150 | RoboDyn Egypt |
+| **Wire Strippers** | For 20-30 AWG wire | 80-150 | RoboDyn Egypt |
+| **Flush Cutters** | For component leads | 60-100 | RoboDyn Egypt |
+| **Tweezers Set** | 2-3 pieces, anti-static | 50-100 | RoboDyn Egypt |
+
+### Recommended Tool Kit (All-in-One)
+- **Yihua 936D+ Soldering Station** ~450 EGP
+- Includes: Iron, stand, sponge, tips
+
+### Soldering Accessories
+
+| Item | Use | Price (EGP) |
+|------|-----|--------------|
+| **Brass Wool** | Clean iron tip | 40 |
+| **Solder Wick** | Remove excess solder | 30 |
+| **Helping Hands** | Hold components | 80 |
+| **IPA (99%)** | Clean PCBs | 40 |
+| **Double-Sided Tape** | Mount components | 25 |
+| **Hot Glue Gun** | Secure battery, wires | 60 |
+
+### Testing & Debugging Tools
+
+| Item | Use | Price (EGP) |
+|------|-----|--------------|
+| **Logic Analyzer** | Debug I2C, SPI | 400-800 |
+| **USB-Serial Converter** | Upload firmware | 50-100 |
+
+### Tool Buying Checklist
+
+```
+□ Soldering Station (60W+)
+□ Solder Wire (60/40, 0.8mm)
+□ Flux Pen
+□ Brass Wool (for cleaning iron)
+□ Digital Multimeter
+□ Precision Screwdriver Set
+□ Wire Strippers
+□ Flush Cutters
+□ Tweezers Set
+□ Helping Hands
+□ Solder Wick
+□ Isopropyl Alcohol (99%)
+□ Double-Sided Tape
+□ Hot Glue Gun
+□ USB-C Cable
+□ Jumper Wires
+□ Hookup Wire (various colors)
+```
+
+**Estimated Tool Total: ~1,500-2,000 EGP**
+
+### How to Solder (Step by Step)
+
+**Basic Through-Hole Soldering:**
+1. Clean tip on brass wool
+2. Set iron to 350°C (lead solder) or 380°C (lead-free)
+3. Heat BOTH component lead AND pad for 2 seconds
+4. Touch solder to joint (NOT the iron)
+5. Remove solder, then iron
+6. Inspect joint: should be shiny, cone-shaped
+
+**I2C Connections (Female Headers):**
+1. Place female headers on ESP32 pins
+2. Hold headers flat against PCB
+3. Solder ONE pin
+4. Check alignment, adjust if crooked
+5. Solder remaining pins
+
+### Testing with Multimeter
+
+**Continuity Test (Check for Shorts):**
+1. Set multimeter to continuity mode (beeper icon)
+2. Touch probes together - should beep
+3. Probe component leads - check connections
+4. If beeps between VCC and GND = BAD (short circuit!)
+
+**Measure Voltage:**
+1. Set to DC voltage (20V range)
+2. Black probe to GND
+3. Red probe to point to test
+4. Read display
+
+**Check ESP32 3.3V Power:**
+- ESP32 3V3 pin should read: 3.2V - 3.4V (GOOD)
+- If reads 0V = no power
+- If reads 5V = WRONG VOLTAGE (will damage sensors!)
 
 ---
 
@@ -154,6 +255,63 @@ ESP32 GPIO Map:
 2. **Decoupling Capacitors**: 100nF near each IC VCC pin
 3. **Voltage Divider**: 100K + 100K for battery ADC (max 3.3V input)
 4. **LED Current Limiting**: 330R resistors on indicator LEDs
+
+### Detailed Wiring (MAX30102 → ESP32)
+
+| MAX30102 | ESP32 | Wire Color | Notes |
+|----------|-------|------------|-------|
+| VCC | 3V3 | Red | 3.3V power |
+| GND | GND | Black | Ground |
+| SDA | GPIO 21 (SDA) | Yellow | I2C Data |
+| SCL | GPIO 22 (SCL) | Orange | I2C Clock |
+| INT | GPIO 26/27 | Blue | Interrupt output |
+
+**I2C Address:** MAX30102 = 0x57
+
+### Detailed Wiring (MPU6050 → ESP32)
+
+| MPU6050 | ESP32 | Wire Color | Notes |
+|---------|-------|------------|-------|
+| VCC | 3V3 | Red | 3.3V power |
+| GND | GND | Black | Ground |
+| SDA | GPIO 21 (SDA) | Yellow | I2C Data (shared) |
+| SCL | GPIO 22 (SCL) | Orange | I2C Clock (shared) |
+| INT | GPIO 27 | Purple | Interrupt output |
+
+**I2C Address:** MPU6050 = 0x68 (or 0x69 if AD0 is HIGH)
+
+### Button Circuit (Pull-Down Resistor)
+
+```
+         10kΩ
+  3V3 ───/\/\/────┬──── Button ──── GND
+                  │
+                  └──── GPIO (Input)
+```
+
+| Button | ESP32 GPIO | Function |
+|--------|------------|----------|
+| Button 1 (Mode) | GPIO 17/26 | Cycle through modes |
+| Button 2 (Emergency) | GPIO 34/32 | Send emergency alert |
+| Button 3 (Back) | GPIO 35/33 | Go back / Dismiss |
+
+### LED Wiring
+
+| LED | ESP32 GPIO | Resistor | Notes |
+|-----|------------|----------|-------|
+| Red LED | GPIO 4/2 | 330Ω | Status indicator |
+| Green LED | GPIO 16/18 | 330Ω | Status indicator |
+
+### Vibration Motor (via Transistor)
+
+```
+         1kΩ
+GPIO ───/\/\/────┬──── Base (NPN: 2N2222)
+                 │
+              Collector ─── Motor ─── 3V3
+                 │
+              Emitter ─── GND
+```
 
 ---
 

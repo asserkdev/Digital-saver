@@ -50,11 +50,6 @@ Digital-saver/
 │           ├── DigitalSaverWatch.ino    # Complete firmware (1000+ lines)
 │           └── platformio.ini
 │
-├── 📋 docs/hardware/                # Hardware Documentation
-│   ├── BILL_OF_MATERIALS.md         # Complete parts list + prices
-│   ├── WIRING_DIAGRAM.md            # Pin connections + wiring
-│   └── TOOLS_GUIDE.md               # Required tools + usage
-│
 ├── 🌐 index.html                    # GitHub Pages (Project Website)
 ├── 📦 supabase/migrations/         # Database migrations
 └── 📦 README.md                     # This file
@@ -216,7 +211,7 @@ ESP32 GPIO 39 ──────── Push Button 1 (mode)
 ESP32 GPIO 34 ──────── Push Button 2 (emergency)
 ```
 
-For detailed wiring diagrams, see: [docs/hardware/WIRING_DIAGRAM.md](docs/hardware/WIRING_DIAGRAM.md)
+For detailed wiring diagrams, tools guide, and complete build instructions, see: [WATCH_BUILD_GUIDE.md](WATCH_BUILD_GUIDE.md)
 
 #### Step 4: Upload Firmware
 ```bash

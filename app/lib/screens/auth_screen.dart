@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/cambric_auth_service_v2.dart';
 
 class AuthScreen extends StatefulWidget {
   final VoidCallback? onSignedIn;
@@ -79,16 +81,19 @@ class _AuthScreenState extends State<AuthScreen> {
     _startLoadingTimer();
 
     try {
-      final response = await Supabase.instance.client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+      // Use AuthProvider for consistent state management
+      final auth = context.read<AuthProvider>();
+      final success = await auth.signIn(email: email, password: password);
 
       _loadingTimer?.cancel();
 
-      if (response.user != null && mounted) {
+      if (success && mounted) {
         Navigator.of(context).pop();
         widget.onSignedIn?.call();
+      } else if (mounted) {
+        setState(() {
+          _errorMessage = auth.error ?? 'Sign in failed';
+        });
       }
     } on AuthException catch (e) {
       _loadingTimer?.cancel();
@@ -134,30 +139,17 @@ class _AuthScreenState extends State<AuthScreen> {
     _startLoadingTimer();
 
     try {
-      final response = await Supabase.instance.client.auth.signUp(
+      // Use AuthProvider for consistent state management
+      final auth = context.read<AuthProvider>();
+      final success = await auth.signUp(
         email: email,
         password: password,
-        data: {'display_name': name},
+        displayName: name,
       );
 
       _loadingTimer?.cancel();
 
-      if (response.user != null) {
-        try {
-          await Supabase.instance.client.from('digital_saver_user_profiles').insert({
-            'id': response.user!.id,
-            'email': email,
-            'display_name': name,
-          });
-        } catch (_) {}
-        try {
-          await Supabase.instance.client.from('digital_saver_storage_stats').insert({
-            'user_id': response.user!.id,
-          });
-        } catch (_) {}
-      }
-
-      if (mounted) {
+      if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Account created successfully!'),
@@ -166,6 +158,10 @@ class _AuthScreenState extends State<AuthScreen> {
         );
         Navigator.of(context).pop();
         widget.onSignedIn?.call();
+      } else if (mounted) {
+        setState(() {
+          _errorMessage = auth.error ?? 'Sign up failed';
+        });
       }
     } on AuthException catch (e) {
       _loadingTimer?.cancel();

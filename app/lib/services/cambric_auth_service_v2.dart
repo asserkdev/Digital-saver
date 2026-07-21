@@ -276,6 +276,16 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
+    // Safety timeout - ensure loading is set to false after 10 seconds
+    final timeoutFuture = Future.delayed(const Duration(seconds: 10), () {
+      if (_loading) {
+        _loading = false;
+        _error = 'Sign in timed out';
+        notifyListeners();
+      }
+      return false;
+    });
+
     try {
       final response = await _client.auth.signInWithPassword(
         email: email,
@@ -287,6 +297,7 @@ class AuthProvider extends ChangeNotifier {
         _profile = CambricUserProfile.fromUser(_user!);
         await _loadFullProfile();
         _loading = false;
+        _initialCheckDone = true; // Mark as done after sign in
         notifyListeners();
         return true;
       }

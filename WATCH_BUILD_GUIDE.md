@@ -409,8 +409,9 @@ GPIO ───/\/\/────┬──── Base (NPN: 2N2222)
 ### Firmware Architecture
 
 ```
-OnyxWatchFirmware/
-├── OnyxWatchFirmware.ino          # Main sketch
+DigitalSaverWatch/
+├── DigitalSaverWatch.ino          # Main firmware sketch
+├── platformio.ini                 # PlatformIO configuration
 ├── Config.h                       # Pin definitions
 ├── Sensors/
 │   ├── HeartRateSensor.h         # MAX30102 interface

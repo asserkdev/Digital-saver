@@ -797,68 +797,54 @@ Between VCC & GND   Very high Ω 0Ω = SHORT CIRCUIT — do not power!
 
 ## 10. Google Play Publishing
 
-### Step 1: Generate Signing Key
+### Create Developer Account
+
+1. Go to: **https://play.google.com/console**
+2. Pay **$25 USD** registration fee (one-time)
+3. Complete your profile
+
+### Generate Signing Key
 
 ```bash
-keytool -genkey -v -keystore digital_saver_key.jks \
-  -keyalg RSA -keysize 2048 -validity 10000 \
-  -alias digital_saver
+keytool -genkey -v -keystore digital_saver_key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias digital_saver
 ```
 
-⚠️ **Store this file securely — losing it means you can never update your app.**
+**Important:** Keep this file secure! Required for every update.
 
-### Step 2: Configure android/app/build.gradle
+### Configure build.gradle
 
 ```gradle
 android {
     signingConfigs {
         release {
             keyAlias 'digital_saver'
-            keyPassword 'YOUR_KEY_PASSWORD'
+            keyPassword 'your-password'
             storeFile file('digital_saver_key.jks')
-            storePassword 'YOUR_STORE_PASSWORD'
+            storePassword 'your-password'
         }
     }
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
         }
     }
 }
 ```
 
-### Step 3: Build & Upload
+### Build Release APK
 
 ```bash
+cd app
 flutter build apk --release
-# APK → build/app/outputs/flutter-apk/app-release.apk
 ```
 
-### Step 4: Play Console Setup
+### Upload to Play Console
 
-1. Create account at play.google.com/console ($25 one-time fee)
-2. Create app: "Digital Saver", Health & Fitness category
-3. Upload APK, add 2+ screenshots (1080×1920)
-4. Add privacy policy URL (required — see template below)
-5. Submit for review (1–3 days)
-
-### Privacy Policy Template
-
-Host this HTML at `https://cambric-software.github.io/Digital-saver/privacy_policy.html`:
-
-```html
-<!DOCTYPE html><html><body>
-<h1>Privacy Policy — Digital Saver</h1>
-<p>Digital Saver collects health data (heart rate, SpO₂, blood pressure) 
-from your paired smartwatch via Bluetooth. All data is processed and stored 
-locally on your device only. We do not transmit personal health data to 
-external servers. Emergency contact data is used solely to send SOS alerts 
-at your explicit request. This app is not a certified medical device.</p>
-<p>Contact: [your email]</p>
-</body></html>
-```
+1. Create app in Play Console
+2. Upload signed APK
+3. Fill store listing (screenshots, description)
+4. Set content rating (Health & Fitness)
+5. Submit for review
 
 ---
 

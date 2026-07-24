@@ -779,7 +779,123 @@ void diagnosticMode() {
 
 ---
 
-**Document Version:** 1.0.0  
-**Last Updated:** July 2026  
-**Author:** Cambric Engineering Team  
-**Copyright © 2026 Cambric. All Rights Reserved.**
+## 12. Tools & Equipment Guide
+
+### Essential Tools (Cannot Build Without)
+
+| Tool | Purpose | Cost (EGP) |
+|------|---------|-------------|
+| Soldering Iron (60W) | Main soldering | ~400 |
+| Solder Wire (63/37) | Electrical connections | ~150 |
+| Multimeter | Testing/debugging | ~350 |
+| Wire Cutters | Trim leads | ~100 |
+| Tweezers | Small components | ~80 |
+| USB-C Cable | Power/programming | ~100 |
+
+### Recommended Tools
+
+| Tool | Purpose | Cost (EGP) |
+|------|---------|-------------|
+| Hot Air Station | SMD components | ~1,500 |
+| Logic Analyzer | I2C/SPI debugging | ~800 |
+| Power Supply | Stable 3.3V/5V | ~600 |
+
+### How to Solder
+
+1. **Clean tip** - Wipe on damp sponge before each joint
+2. **Heat pad** - Touch iron to both pad AND component lead (2-3 sec)
+3. **Apply solder** - Add solder to the joint, not the iron
+4. **Remove iron** - Lift straight up when shiny joint forms
+
+---
+
+## 13. Bill of Materials (BOM)
+
+### Essential Components (~920 EGP/unit)
+
+| Component | Specification | Qty | Unit Price | Total |
+|-----------|---------------|-----|------------|-------|
+| ESP32-WROOM-32 | Main MCU | 1 | 280 | 280 |
+| MAX30102 | Heart rate/SpO2 | 1 | 180 | 180 |
+| MPU6050 | Accelerometer | 1 | 75 | 75 |
+| OLED 0.96" I2C | Display 128x64 | 1 | 85 | 85 |
+| LiPo 3010120 400mAh | Battery | 1 | 95 | 95 |
+| TP4056 | Charger module | 1 | 35 | 35 |
+| Resistors/Capacitors | Assorted | - | 50 | 50 |
+| Wires/Connectors | Various | - | 100 | 100 |
+| **TOTAL** | | | | **~920 EGP** |
+
+---
+
+## 14. PCB Design & Wiring
+
+### Power Circuit
+```
+3.7V LiPo -> TP4056 -> 3.3V Regulator -> ESP32 + Sensors
+              |
+           USB 5V -> Charging
+```
+
+### Button Circuit (Pull-Down)
+```
+3.3V --- 10kohm --- Button --- GND
+               |
+               --- GPIO (Input)
+```
+
+### Vibration Motor (via Transistor)
+```
+GPIO --- 1kohm --- Base (NPN)
+                   |
+               Collector --- Motor --- 3.3V
+                   |
+               Emitter --- GND
+```
+
+---
+
+## 15. Assembly Guide
+
+### Step 1: PCB Preparation
+1. Clean PCB with IPA (isopropyl alcohol)
+2. Check for solder bridges under microscope
+3. Verify all component footprints
+
+### Step 2: Sensor Installation
+1. **MAX30102**: Solder 4-pin header, thermal paste back
+2. **MPU6050**: Solder to PCB, verify I2C at 0x68
+3. **OLED**: Attach FPC connector carefully
+
+### Step 3: Power System
+1. Connect battery (Red=B+, Black=B-)
+2. Press power button
+3. Verify 3.3V on rails with multimeter
+
+### Step 4: Enclosure Assembly
+1. Insert PCB into bottom case
+2. Install battery (adhesive backed)
+3. Snap top case into place
+
+---
+
+## 16. Quality Control Checklist
+
+```
+- Visual inspection (microscope)
+- Continuity test (power rails)
+- I2C device detection
+- Firmware upload test
+- Display functionality
+- Heart rate sensor test
+- Motion sensor test
+- Battery charging test
+- Bluetooth pairing test
+- Battery life test (>6 hours)
+```
+
+---
+
+**Document Version:** 1.1.0 (Updated with build guide)
+**Last Updated:** July 2026
+**Author:** Cambric Engineering Team
+**Copyright 2026 Cambric. All Rights Reserved.**

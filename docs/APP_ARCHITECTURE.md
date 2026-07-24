@@ -693,7 +693,106 @@ import 'package:url_launcher/url_launcher.dart';
 
 ---
 
-**Document Version:** 1.0.0  
+## Appendix B: Complete main.dart Example
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'core/constants/app_constants.dart';
+import 'core/theme/app_theme.dart';
+import 'data/providers/auth_provider.dart';
+import 'data/providers/health_provider.dart';
+import 'data/providers/settings_provider.dart';
+import 'services/ble_service.dart';
+import 'services/storage_service.dart';
+import 'services/notification_service.dart';
+import 'screens/splash_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock orientation to portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: AppConstants.supabaseUrl,
+    anonKey: AppConstants.supabaseAnonKey,
+    debug: !kReleaseMode,
+  );
+
+  // Initialize services
+  await StorageService.init();
+  await NotificationService.init();
+
+  runApp(const DigitalSaverApp());
+}
+
+class DigitalSaverApp extends StatelessWidget {
+  const DigitalSaverApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => HealthProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => BleService()),
+      ],
+      child: MaterialApp(
+        title: 'Digital Saver',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
+        home: const SplashScreen(),
+      ),
+    );
+  }
+}
+```
+
+## Appendix C: App Constants Example
+
+```dart
+class AppConstants {
+  // App Info
+  static const String appName = 'Digital Saver';
+  static const String companyName = 'Cambric';
+  static const String watchName = 'Onyx';
+  static const String appVersion = '3.0.0';
+
+  // Supabase Configuration
+  static const String supabaseUrl = 'https://dafgzzkerytjuvxzymnq.supabase.co';
+  static const String supabaseAnonKey = 'your-anon-key';
+
+  // BLE Configuration
+  static const String bleServiceUuid = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
+  static const String bleCharacteristicUuid = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
+
+  // Watch Device Names
+  static const List<String> watchKeywords = ['onyx', 'digital saver', 'cambric'];
+
+  // Timing
+  static const Duration bleScanTimeout = Duration(seconds: 30);
+  static const Duration syncInterval = Duration(minutes: 5);
+
+  // Colors
+  static const Color primaryColor = Color(0xFF2563EB);
+  static const Color secondaryColor = Color(0xFF7C3AED);
+}
+```
+
+---
+
+**Document Version:** 1.0.1 (Updated with code examples)  
 **Last Updated:** July 2026  
 **Author:** Cambric Engineering Team  
 **Copyright © 2026 Cambric. All Rights Reserved.**

@@ -220,3 +220,17 @@ class AuthProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+
+  Future<void> updateProfile({String? displayName, Map<String, dynamic>? additionalData}) async {
+    if (_user == null) return;
+    try {
+      final updates = <String, dynamic>{
+        'id': _user!.id,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      if (displayName != null) updates['display_name'] = displayName;
+      if (additionalData != null) updates.addAll(additionalData);
+      await Supabase.instance.client.from('digital_saver_user_profiles').upsert(updates);
+      notifyListeners();
+    } catch (_) {}
+  }

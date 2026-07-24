@@ -66,7 +66,6 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _init() async {
-    // Wait for Supabase client to be ready
     SupabaseClient? client;
     for (int i = 0; i < 30 && client == null; i++) {
       await Future.delayed(const Duration(milliseconds: 100));
@@ -82,7 +81,6 @@ class AuthProvider extends ChangeNotifier {
       return;
     }
 
-    // Listen for auth changes
     _subscription = client.auth.onAuthStateChange.listen((data) {
       _onAuthStateChange(client!, data);
     });
@@ -196,6 +194,20 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateProfile({String? displayName, Map<String, dynamic>? additionalData}) async {
+    if (_user == null) return;
+    try {
+      final updates = <String, dynamic>{
+        'id': _user!.id,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      if (displayName != null) updates['display_name'] = displayName;
+      if (additionalData != null) updates.addAll(additionalData);
+      await Supabase.instance.client.from('digital_saver_user_profiles').upsert(updates);
+      notifyListeners();
+    } catch (_) {}
+  }
+
   Future<void> _ensureProfile() async {
     if (_user == null) return;
     try {
@@ -220,17 +232,3 @@ class AuthProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-
-  Future<void> updateProfile({String? displayName, Map<String, dynamic>? additionalData}) async {
-    if (_user == null) return;
-    try {
-      final updates = <String, dynamic>{
-        'id': _user!.id,
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-      if (displayName != null) updates['display_name'] = displayName;
-      if (additionalData != null) updates.addAll(additionalData);
-      await Supabase.instance.client.from('digital_saver_user_profiles').upsert(updates);
-      notifyListeners();
-    } catch (_) {}
-  }

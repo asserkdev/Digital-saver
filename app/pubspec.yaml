@@ -23,6 +23,10 @@ dependencies:
   uuid: ^4.4.0
   connectivity_plus: ^6.0.3
 
+# Override app_links to use a compatible version
+dependency_overrides:
+  app_links: ^6.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

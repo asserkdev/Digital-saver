@@ -157,25 +157,18 @@ class AuthProvider extends ChangeNotifier {
           .maybeSingle();
       
       if (result != null) {
-        // User belongs to Digital Saver, load profile
+        // User exists, load profile
         _profile = CambricUserProfile.fromProfile(result);
-        _initialized = true;
-        _loading = false;
-        notifyListeners();
-      } else {
-        // User doesn't belong to Digital Saver - don't use this session
-        // Sign out and require manual login
-        _user = null;
-        _profile = null;
-        await _client!.auth.signOut();
-        _initialized = true;
-        _loading = false;
-        notifyListeners();
       }
+      // If user doesn't exist yet, they'll have an empty profile
+      // This is fine - they can use the app with basic auth
+      
+      _initialized = true;
+      _loading = false;
+      notifyListeners();
     } catch (e) {
-      // Database check failed, be safe and require login
-      _user = null;
-      _profile = null;
+      // Database check failed, but user IS authenticated via Supabase
+      // Just continue without profile data
       _initialized = true;
       _loading = false;
       notifyListeners();
@@ -284,21 +277,22 @@ class AuthProvider extends ChangeNotifier {
       if (response.user != null) {
         _user = response.user;
         _profile = CambricUserProfile.fromUser(_user!);
-        await _createUserProfile();
+        _loading = false;
+        _initialized = true;
         notifyListeners();
+        await _createUserProfile();
         return true;
       }
 
       _error = 'Sign up pending. Please check your email to confirm.';
+      _loading = false;
       notifyListeners();
       return false;
     } catch (e) {
       _error = _parseError(e);
-      notifyListeners();
-      return false;
-    } finally {
       _loading = false;
       notifyListeners();
+      return false;
     }
   }
 
@@ -319,25 +313,29 @@ class AuthProvider extends ChangeNotifier {
       if (result.user != null) {
         _user = result.user;
         _profile = CambricUserProfile.fromUser(_user!);
-        _loadFullProfile();
+        _loading = false;
+        _initialized = true;
+        _error = null;
         notifyListeners();
+        // Load profile in background
+        _loadFullProfile();
         return true;
       }
 
       _error = 'Sign in failed';
+      _loading = false;
       notifyListeners();
       return false;
     } on TimeoutException {
       _error = 'Connection timed out. Please check your internet.';
+      _loading = false;
       notifyListeners();
       return false;
     } catch (e) {
       _error = _parseError(e);
-      notifyListeners();
-      return false;
-    } finally {
       _loading = false;
       notifyListeners();
+      return false;
     }
   }
 

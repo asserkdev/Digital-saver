@@ -27,7 +27,12 @@ jobs:
           channel: 'stable'
 
       - name: Install dependencies
-        run: cd app && flutter pub get
+        run: |
+          cd app
+          flutter pub get
+          # Remove cached lock to force dependency_overrides to take effect
+          rm -f pubspec.lock
+          flutter pub get
 
       - name: Build Android APK (Release)
         run: cd app && flutter build apk --release

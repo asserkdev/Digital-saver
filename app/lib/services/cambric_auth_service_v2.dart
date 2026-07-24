@@ -128,17 +128,54 @@ class AuthProvider extends ChangeNotifier {
 
   void _checkExistingSession() {
     try {
-       final session = _client!.auth.currentSession;
+      final session = _client!.auth.currentSession;
       if (session != null && session.user != null) {
         _user = session.user;
         _profile = CambricUserProfile.fromUser(_user!);
-        _loadFullProfile();
+        // Verify this user belongs to Digital Saver by checking our database
+        _verifyAndLoadProfile();
+      } else {
         _initialized = true;
         _loading = false;
         notifyListeners();
       }
     } catch (e) {
       // Session check failed, that's OK
+      _initialized = true;
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _verifyAndLoadProfile() async {
+    try {
+      // Check if user exists in Digital Saver's database
+      final result = await _client!
+          .from('digital_saver_user_profiles')
+          .select()
+          .eq('id', _user!.id)
+          .maybeSingle();
+      
+      if (result != null) {
+        // User belongs to Digital Saver, load profile
+        _profile = CambricUserProfile.fromProfile(result);
+        _initialized = true;
+        _loading = false;
+        notifyListeners();
+      } else {
+        // User doesn't belong to Digital Saver - don't use this session
+        // Sign out and require manual login
+        _user = null;
+        _profile = null;
+        await _client!.auth.signOut();
+        _initialized = true;
+        _loading = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      // Database check failed, be safe and require login
+      _user = null;
+      _profile = null;
       _initialized = true;
       _loading = false;
       notifyListeners();
@@ -158,7 +195,8 @@ class AuthProvider extends ChangeNotifier {
           _error = null;
           _initialized = true;
           _loading = false;
-          _loadFullProfile();
+          // Verify user belongs to Digital Saver
+          _verifyAndLoadProfile();
         }
         break;
 

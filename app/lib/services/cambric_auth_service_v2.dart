@@ -3,15 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CambricAuth {
-  static const String _supabaseUrl = 'https://dafgzzkerytjuvxzymnq.supabase.co';
-  static const String _supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZmd6emtlcnl0anV2eHp5bW5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MTE1MDUsImV4cCI6MjA5OTI4NzUwNX0.bZdxqNuy1ZyHMGzBieq7BzUd6IUEhfHEZxL-YTka3DQ';
-
-  static SupabaseClient? _client;
-
-  static SupabaseClient get client {
-    _client ??= SupabaseClient(_supabaseUrl, _supabaseAnonKey);
-    return _client!;
-  }
+  // Use the Supabase instance that's already initialized in main.dart
+  static SupabaseClient get client => Supabase.instance.client;
 
   static User? get currentUser => client.auth.currentUser;
   static Session? get currentSession => client.auth.currentSession;

@@ -66,7 +66,7 @@ class CambricUserProfile {
 /// Simplified AuthProvider with reliable session handling
 /// Uses standard Supabase Auth session management
 class AuthProvider extends ChangeNotifier {
-  SupabaseClient get _client => CambricAuth.client;
+  SupabaseClient? _client;
   User? _user;
   CambricUserProfile? _profile;
   bool _loading = true; // Start true for initial check
@@ -86,10 +86,12 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> _init() async {
     // Check for existing session first
-    _checkExistingSession();
+    await Future.delayed(const Duration(milliseconds: 500));
+    _client = Supabase.instance.client;
+    assert(_client != null, "Supabase client should be initialized");
     
     // Then listen for auth changes
-    _authSubscription = _client.auth.onAuthStateChange.listen(_handleAuthChange);
+    _authSubscription = _client!.auth.onAuthStateChange.listen(_handleAuthChange);
     
     // Fallback: mark as initialized after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
@@ -103,7 +105,7 @@ class AuthProvider extends ChangeNotifier {
 
   void _checkExistingSession() {
     try {
-      final session = _client.auth.currentSession;
+       final session = _client!.auth.currentSession;
       if (session != null && session.user != null) {
         _user = session.user;
         _profile = CambricUserProfile.fromUser(_user!);
@@ -212,7 +214,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _client.auth.signUp(
+      final response = await _client!.auth.signUp(
         email: email,
         password: password,
         data: displayName != null ? {'display_name': displayName} : null,
@@ -248,7 +250,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await _client.auth.signInWithPassword(
+      final result = await _client!.auth.signInWithPassword(
         email: email,
         password: password,
       ).timeout(const Duration(seconds: 30));
@@ -284,7 +286,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _client.auth.signInWithOAuth(
+      await _client!.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: 'https://cambric-software.github.io/Digital-saver/',
       );
@@ -304,7 +306,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _client.auth.signOut();
+      await _client!.auth.signOut();
     } catch (e) {
       // Continue with local sign out
     }
@@ -329,7 +331,7 @@ class AuthProvider extends ChangeNotifier {
 
       if (displayName != null) {
         updates['display_name'] = displayName;
-        await _client.auth.updateUser(
+        await _client!.auth.updateUser(
           UserAttributes(data: {'display_name': displayName}),
         );
       }
@@ -338,7 +340,7 @@ class AuthProvider extends ChangeNotifier {
         updates.addAll(additionalData);
       }
 
-      await _client.from('digital_saver_user_profiles').upsert(updates);
+      await _client!.from('digital_saver_user_profiles').upsert(updates);
 
       if (displayName != null && _profile != null) {
         _profile = CambricUserProfile(
@@ -365,7 +367,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _client.auth.resetPasswordForEmail(
+      await _client!.auth.resetPasswordForEmail(
         email,
         redirectTo: 'https://cambric-software.github.io/Digital-saver/',
       );
@@ -386,7 +388,7 @@ class AuthProvider extends ChangeNotifier {
     if (_user == null) return;
 
     try {
-      await _client.from('digital_saver_user_profiles').upsert({
+      await _client!.from('digital_saver_user_profiles').upsert({
         'id': _user!.id,
         'email': _user!.email,
         'display_name': _profile?.displayName ?? _user!.email?.split('@').first,

@@ -146,6 +146,10 @@ class AuthProvider extends ChangeNotifier {
           _loadFullProfile();
         }
         break;
+
+      case AuthChangeEvent.passwordRecovery:
+        // Password recovery email was sent - no action needed
+        break;
     }
     
     notifyListeners();

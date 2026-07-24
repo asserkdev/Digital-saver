@@ -31,6 +31,10 @@ class CambricUserProfile {
   });
 
   factory CambricUserProfile.fromUser(User user) {
+    // Safety check - ensure user has an ID
+    if (user.id.isEmpty) {
+      throw Exception('User ID is empty');
+    }
     return CambricUserProfile(
       id: user.id,
       email: user.email,
@@ -43,8 +47,13 @@ class CambricUserProfile {
   }
 
   factory CambricUserProfile.fromProfile(Map<String, dynamic> data) {
+    // Safety check - ensure data has an ID
+    final id = data['id'];
+    if (id == null || (id is String && id.isEmpty)) {
+      throw Exception('Profile data missing ID');
+    }
     return CambricUserProfile(
-      id: data['id'],
+      id: id,
       email: data['email'],
       displayName: data['display_name'],
       avatarUrl: data['avatar_url'],
@@ -176,67 +185,68 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void _handleAuthChange(AuthState data) {
-    final AuthChangeEvent event = data.event;
-    final Session? session = data.session;
+    try {
+      final AuthChangeEvent event = data.event;
+      final Session? session = data.session;
 
-    switch (event) {
-      case AuthChangeEvent.initialSession:
-      case AuthChangeEvent.signedIn:
-        if (session?.user != null) {
-          _user = session!.user;
-          _profile = CambricUserProfile.fromUser(_user!);
-          _error = null;
-          _initialized = true;
-          _loading = false;
-          // Verify user belongs to Digital Saver
-          _verifyAndLoadProfile();
-        }
-        break;
+      switch (event) {
+        case AuthChangeEvent.initialSession:
+        case AuthChangeEvent.signedIn:
+          if (session?.user != null) {
+            _user = session!.user;
+            _profile = CambricUserProfile.fromUser(_user!);
+            _error = null;
+            _initialized = true;
+            _loading = false;
+            // Verify user belongs to Digital Saver
+            _verifyAndLoadProfile();
+          }
+          break;
 
-      case AuthChangeEvent.tokenRefreshed:
-        if (session?.user != null) {
-          _user = session!.user;
-          _profile = CambricUserProfile.fromUser(_user!);
-        }
-        break;
+        case AuthChangeEvent.tokenRefreshed:
+          if (session?.user != null) {
+            _user = session!.user;
+            _profile = CambricUserProfile.fromUser(_user!);
+          }
+          break;
 
-      case AuthChangeEvent.signedOut:
-        _user = null;
-        _profile = null;
-        break;
+        case AuthChangeEvent.signedOut:
+          _user = null;
+          _profile = null;
+          break;
 
-      case AuthChangeEvent.userUpdated:
-        if (session?.user != null) {
-          _user = session!.user;
-          _profile = CambricUserProfile.fromUser(_user!);
-          _loadFullProfile();
-        }
-        break;
+        case AuthChangeEvent.userUpdated:
+          if (session?.user != null) {
+            _user = session!.user;
+            _profile = CambricUserProfile.fromUser(_user!);
+            _loadFullProfile();
+          }
+          break;
 
-      case AuthChangeEvent.passwordRecovery:
-        // Password recovery email was sent - no action needed
-        break;
+        case AuthChangeEvent.passwordRecovery:
+          // Password recovery email was sent - no action needed
+          break;
 
-      case AuthChangeEvent.userDeleted:
-        // User account was deleted - sign out
-        _user = null;
-        _profile = null;
-        break;
+        case AuthChangeEvent.userDeleted:
+          // User account was deleted - sign out
+          _user = null;
+          _profile = null;
+          break;
 
-      case AuthChangeEvent.mfaChallengeVerified:
-        // MFA challenge completed - refresh user
-        if (session?.user != null) {
-          _user = session!.user;
-          _profile = CambricUserProfile.fromUser(_user!);
-        }
-        break;
-
-      default:
-        // Handle unknown events gracefully
-        break;
+        case AuthChangeEvent.mfaChallengeVerified:
+          // MFA challenge completed - refresh user
+          if (session?.user != null) {
+            _user = session!.user;
+            _profile = CambricUserProfile.fromUser(_user!);
+          }
+          break;
+      }
+    } catch (e) {
+      // Ignore errors in auth state handler - prevents crashes
+      _initialized = true;
+      _loading = false;
+      notifyListeners();
     }
-    
-    notifyListeners();
   }
 
   Future<void> _loadFullProfile() async {
